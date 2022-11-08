@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ShoppingManagerForm</class>
+ <widget class="QWidget" name="ShoppingManagerForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>495</width>
+    <height>370</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QTreeWidget" name="shopTreeWidget">
+      <property name="rootIsDecorated">
+       <bool>false</bool>
+      </property>
+      <property name="itemsExpandable">
+       <bool>false</bool>
+      </property>
+      <column>
+       <property name="text">
+        <string>ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>고객 ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>제품 ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>주문 일자</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>주문량</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>주문 총액</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QComboBox" name="showComboBox">
+           <item>
+            <property name="text">
+             <string>name</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>pdName</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>category</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="showLineEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTreeWidget" name="clientTreeWidget">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>200</height>
+          </size>
+         </property>
+         <property name="autoScrollMargin">
+          <number>18</number>
+         </property>
+         <property name="rootIsDecorated">
+          <bool>false</bool>
+         </property>
+         <property name="itemsExpandable">
+          <bool>false</bool>
+         </property>
+         <attribute name="headerDefaultSectionSize">
+          <number>50</number>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>client ID</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>name</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>gender</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>age</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>phone Number</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>address</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTreeWidget" name="productTreeWidget">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>200</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>0</width>
+           <height>10</height>
+          </size>
+         </property>
+         <property name="autoScrollMargin">
+          <number>10</number>
+         </property>
+         <property name="dragEnabled">
+          <bool>false</bool>
+         </property>
+         <property name="rootIsDecorated">
+          <bool>false</bool>
+         </property>
+         <property name="itemsExpandable">
+          <bool>false</bool>
+         </property>
+         <property name="headerHidden">
+          <bool>false</bool>
+         </property>
+         <attribute name="headerCascadingSectionResizes">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="headerDefaultSectionSize">
+          <number>50</number>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>product ID</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>제품명</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>가격</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>재고량</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>품목</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolBox" name="toolBox">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="inputPage">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>235</width>
+            <height>220</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>&amp;Input</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <layout class="QFormLayout" name="formLayout">
+               <item row="0" column="0">
+                <widget class="QLabel" name="idLabel">
+                 <property name="text">
+                  <string>ID</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="idLineEdit">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="clientNameLabel">
+                 <property name="text">
+                  <string>clientName</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="clientNameLineEdit">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="pdNameLabel">
+                 <property name="text">
+                  <string>productName</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="pdNameLlineEdit">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="timeLabel">
+                 <property name="text">
+                  <string>time</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLineEdit" name="timeLlineEdit">
+                 <property name="placeholderText">
+                  <string>Please Input &quot;YYYY-MM-DD&quot;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="totalLabel">
+                 <property name="text">
+                  <string>totalAmount</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QLineEdit" name="totalLineEdit">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLineEdit" name="orderLineEdit">
+                 <property name="inputMask">
+                  <string>99999</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="cursorPosition">
+                  <number>0</number>
+                 </property>
+                 <property name="placeholderText">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="orderLabel">
+                 <property name="text">
+                  <string>order</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="clearPushButton">
+               <property name="text">
+                <string>&amp;Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>78</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <layout class="QGridLayout" name="gridLayout">
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="addPushButton">
+                   <property name="text">
+                    <string>&amp;Add</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="modifyPushButton">
+                   <property name="text">
+                    <string>&amp;Modify</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="searchPage">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>245</width>
+            <height>133</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>&amp;Search</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <widget class="QTreeWidget" name="searchTreeWidget">
+               <property name="rootIsDecorated">
+                <bool>false</bool>
+               </property>
+               <property name="itemsExpandable">
+                <bool>false</bool>
+               </property>
+               <column>
+                <property name="text">
+                 <string>ID</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>고객 ID</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>제품 ID</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>주문일자</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>주문량</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>주문총액</string>
+                </property>
+               </column>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <widget class="QComboBox" name="searchComboBox">
+                 <item>
+                  <property name="text">
+                   <string>ID</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>고객 ID</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>제품 ID</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>주문일자</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="searchLineEdit"/>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="searchPushButton">
+               <property name="text">
+                <string>&amp;Search</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>shopTreeWidget</tabstop>
+  <tabstop>showComboBox</tabstop>
+  <tabstop>showLineEdit</tabstop>
+  <tabstop>clientTreeWidget</tabstop>
+  <tabstop>productTreeWidget</tabstop>
+  <tabstop>idLineEdit</tabstop>
+  <tabstop>clientNameLineEdit</tabstop>
+  <tabstop>pdNameLlineEdit</tabstop>
+  <tabstop>timeLlineEdit</tabstop>
+  <tabstop>orderLineEdit</tabstop>
+  <tabstop>totalLineEdit</tabstop>
+  <tabstop>addPushButton</tabstop>
+  <tabstop>modifyPushButton</tabstop>
+  <tabstop>clearPushButton</tabstop>
+  <tabstop>searchTreeWidget</tabstop>
+  <tabstop>searchComboBox</tabstop>
+  <tabstop>searchLineEdit</tabstop>
+  <tabstop>searchPushButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
