@@ -4,12 +4,9 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 
-#include "shoppingitem.h"
-
 class QMenu;
-class ClientItem;
-class ProductItem;
 class ProductManagerForm;
+class QSqlQueryModel;
 
 namespace Ui {
 class ShoppingManagerForm;
@@ -32,25 +29,28 @@ signals:
     void categoryDataSent(QString);
 
 private slots:
-    void showContextMenu(const QPoint&);
+    /* QTreeWidget을 위한 슬롯 */
     void removeItem();
-    void shopReceiveData(ProductItem*);
+    void receiveData(QTreeWidgetItem*);
+    void shopReceiveData(QTreeWidgetItem*);
     void on_showLineEdit_returnPressed();
-
     void on_clientTreeWidget_itemClicked(QTreeWidgetItem *item, int column);
     void on_productTreeWidget_itemClicked(QTreeWidgetItem *item, int column);
-    void on_shopTreeWidget_itemClicked(QTreeWidgetItem *item, int column);
-
+    /* QAction을 위한 슬롯 */
     void on_addPushButton_clicked();
     void on_modifyPushButton_clicked();
     void on_clearPushButton_clicked();
-
     void on_searchPushButton_clicked();
 
+    void on_shopTableView_customContextMenuRequested(const QPoint &pos);
+
+    void on_shopTableView_clicked(const QModelIndex &index);
+
 private:
-    int makeId();
-    QMap<int, ShoppingItem*> shopList;
+    int makeId();   //lastKey()를 활용한 key 생성
     QMenu* menu;
+    QSqlQueryModel *q;
+    QSqlQueryModel *searchQuery;
     Ui::ShoppingManagerForm *ui;
 };
 

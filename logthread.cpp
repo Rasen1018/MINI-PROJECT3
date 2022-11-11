@@ -1,5 +1,6 @@
 #include "logthread.h"
 
+#include <QMessageBox>
 #include <QTreeWidgetItem>
 #include <QFile>
 #include <QDateTime>

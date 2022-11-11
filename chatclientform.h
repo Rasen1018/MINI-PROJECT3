@@ -37,7 +37,11 @@ private slots:
     // 데이터 송수신을 위한 슬롯
     void sendProtocol(Chat_Status type, char* data, int size);
     // 버튼 눌렀을 때
+    void on_logInPushButton_clicked();
     void on_enterPushButton_clicked();
+    void on_pushButton_clicked();
+    void on_sendPushButton_clicked();
+
     void on_quitPushButton_clicked();
 
 private:

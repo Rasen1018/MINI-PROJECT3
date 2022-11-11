@@ -25,7 +25,7 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
         QTcpSocket *clientConnection = chatServer->nextPendingConnection( );
         connect(clientConnection, SIGNAL(disconnected()), this, SLOT(removeClient()));
         connect(clientConnection, SIGNAL(readyRead()), SLOT(receiveData()));
-        ui->welcome->setText("new connection is established...");
+        ui->welcome->setText(tr("new connection is established..."));
     });
     if (!chatServer->listen(QHostAddress::Any, 2000)) {
         QMessageBox::critical(this, tr("Echo Server"),
@@ -44,7 +44,8 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
         return;
     }
 
-    ui->welcome->setText(tr("The server is running on port %1.").arg(chatServer->serverPort()));
+    ui->welcome->
+            setText(tr("The server is running on port %1.").arg(chatServer->serverPort()));
     //setWindowTitle(tr("Echo Server"));
 
     menu = new QMenu;
@@ -52,11 +53,17 @@ ChatServerForm::ChatServerForm(QWidget *parent) :
     ui->connectListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     progressDialog = new QProgressDialog(0);
-    progressDialog->setAutoClose(true);
+    progressDialog->setAutoClose(true);        // 리셋되면 자동 닫힘
     progressDialog->reset();
 
     logThread = new LogThread(this);
     logThread->start();
+
+    connect(ui->savePushButton, &QPushButton::clicked, logThread, [=](){
+        logThread->saveData();
+        QMessageBox::information(this, tr("Log Information"),
+                              tr("Save Complete"));
+    });
     qDebug() << tr("The server is running on port %1.").arg(chatServer->serverPort( ));
 }
 
@@ -70,6 +77,7 @@ ChatServerForm::~ChatServerForm()
 
 void ChatServerForm::receiveData()
 {
+    // sender()와 사용자 정의 슬롯의 연결을 원활히 하기 위해서
     QTcpSocket *clientConnection = dynamic_cast<QTcpSocket *>(sender( ));
     QByteArray bytearray = clientConnection->read(BLOCK_SIZE);
 
@@ -86,8 +94,6 @@ void ChatServerForm::receiveData()
     quint16 port = clientConnection->peerPort();
     QString id = QString::fromStdString(data);
 
-    //qDebug() << ip << " : " << type;
-
     switch(type) {
     case Chat_Login:
         foreach(auto item, ui->allClientListWidget->findItems(id, Qt::MatchContains)) {
@@ -100,6 +106,7 @@ void ChatServerForm::receiveData()
                 QListWidgetItem* connectItem = new QListWidgetItem;
                 connectItem->setIcon(QIcon(":/images/connected.png"));
                 connectItem->setText(clientIdHash[port]);
+                connectItem->setTextAlignment(Qt::AlignCenter);
                 ui->connectListWidget->addItem(connectItem);
                 qDebug() << port << clientIdHash[port].left(4) << clientIdHash[port].mid(5,3);
             }
@@ -142,12 +149,13 @@ void ChatServerForm::receiveData()
         log->setText(4, QString(data));
         log->setToolTip(4, QString(data));
 
-        for(int i = 0; i < ui->logTreeWidget->columnCount(); i++)
+        for(int i = 0; i < ui->logTreeWidget->columnCount(); i++)       // 현재 column 사이즈 설정
             ui->logTreeWidget->resizeColumnToContents(i);
 
         ui->logTreeWidget->addTopLevelItem(log);
 
         logThread->appendData(log);
+
     }
         break;
     case Chat_Out:
@@ -161,7 +169,6 @@ void ChatServerForm::receiveData()
                 item->setText(tmp.at(0)+")"+"    On Standby");
             }
         }
-        clientIdHash.remove(port);
         break;
     case Chat_LogOut: {
         foreach(auto item, ui->allClientListWidget->findItems(id, Qt::MatchContains)) {
@@ -169,10 +176,8 @@ void ChatServerForm::receiveData()
             }
 
         foreach(auto item, ui->connectListWidget->findItems(id, Qt::MatchContains)) {
-            if(item->text().right(1) =="y") {
                 clientList.removeOne(clientConnection);        // QList<QTcpSocket*> clientList;
                 clientSocketHash.remove(id);
-            }
         }
     }
         break;
@@ -184,6 +189,23 @@ void ChatServerForm::openWidget()
     emit callClientForm();
 }
 
+void ChatServerForm::getAllClient(QStringList list) {
+
+    QListWidgetItem* item = new QListWidgetItem;
+    QString cmp = list[0] + "("+ list[1] + ")";
+    if((ui->allClientListWidget->findItems(cmp, Qt::MatchFixedString)).count()==0)
+    {
+        item->setIcon(QIcon(":/images/disconnect.png"));
+        item->setText(list[0] + "("+ list[1] + ")");
+        item->setTextAlignment(Qt::AlignCenter);
+        ui->allClientListWidget->addItem(item);
+    }
+}
+
+void ChatServerForm::widgetUpdate() {
+    ui->allClientListWidget->clear();
+}
+
 void ChatServerForm::removeClient()     // 채팅 프로그램과 연결이 끊어지면(무조건, 어떤상황이든지)
 {
     QTcpSocket *clientConnection = dynamic_cast<QTcpSocket *>(sender( ));
@@ -192,36 +214,36 @@ void ChatServerForm::removeClient()     // 채팅 프로그램과 연결이 끊�
     // 고객 지울때 connect list에서 삭제하기, chat out 상태일때는 connect list에서 icon만 변경
     QString name = clientIdHash[clientConnection->peerPort()];
     foreach(auto item, ui->connectListWidget->findItems(name, Qt::MatchContains)) {
-        int row = ui->connectListWidget->row(item);
-        ui->connectListWidget->takeItem(row);
+        QStringList tmp=item->text().split(")");
+        if(tmp.at(0)+")" == name) {
+            int row = ui->connectListWidget->row(item);
+            ui->connectListWidget->takeItem(row);
+        }
     }
 }
 
 void ChatServerForm::on_actionKickOut_triggered()
 {
-    QString id = ui->allClientListWidget->currentItem()->text().left(4);
-    QTcpSocket* sock = clientSocketHash[id];
+    if(ui->connectListWidget->currentItem() != nullptr) {
+        QString id = ui->allClientListWidget->currentItem()->text().left(4);
+        QTcpSocket* sock = clientSocketHash[id];
 
-    QByteArray sendArray;
-    QDataStream out(&sendArray, QIODevice::WriteOnly);
-    out << Chat_KickOut;
-    out.writeRawData("", 1010);
+        QByteArray sendArray;
+        QDataStream out(&sendArray, QIODevice::WriteOnly);
+        out << Chat_KickOut;
+        out.writeRawData("", 1010);
 
-    sock->write(sendArray);
-    QListWidgetItem* connectItem = ui->allClientListWidget->currentItem();
-    connectItem->setIcon(QIcon(":/images/connected.png"));
+        sock->write(sendArray);
+        QListWidgetItem* connectItem = ui->allClientListWidget->currentItem();
+        connectItem->setIcon(QIcon(":/images/connected.png"));
 
-    Q_FOREACH(auto item, ui->connectListWidget->findItems(id, Qt::MatchContains))
-    {
-        QStringList tmp=item->text().split(")");
-        item->setIcon(QIcon(":/images/connected.png"));
-        item->setText(tmp.at(0)+")"+"    On Standby");
+        Q_FOREACH(auto item, ui->connectListWidget->findItems(id, Qt::MatchContains))
+        {
+            QStringList tmp=item->text().split(")");
+            item->setIcon(QIcon(":/images/connected.png"));
+            item->setText(tmp.at(0)+")"+"    On Standby");
+        }
     }
-//    Q_FOREACH(auto i, ui->connectListWidget->findItems(id, Qt::MatchContains))
-//    {
-//        int row = ui->connectListWidget->row(i);
-//        ui->connectListWidget->takeItem(row);
-//    }
 }
 
 void ChatServerForm::on_createPushButton_clicked()
@@ -234,6 +256,7 @@ void ChatServerForm::on_createPushButton_clicked()
         out << Chat_Invite;
         out.writeRawData("", 1010);
         QTcpSocket* sock = clientSocketHash[id];
+        if(sock == nullptr) return;
 
         sock->write(sendArray);
         QListWidgetItem* connectItem = ui->allClientListWidget->currentItem();
@@ -249,14 +272,15 @@ void ChatServerForm::on_createPushButton_clicked()
 
 void ChatServerForm::on_connectListWidget_customContextMenuRequested(const QPoint &pos)
 {
-    QStringList tmp = ui->connectListWidget->currentItem()->text().split(")");
-    QString text = tmp.at(0)+")";
+    if(ui->connectListWidget->currentItem() != nullptr) {
+        QStringList tmp = ui->connectListWidget->currentItem()->text().split(")");
+        QString text = tmp.at(0)+")";
 
-    foreach(auto i, ui->allClientListWidget->findItems(text, Qt::MatchFixedString)) {
-        int row = ui->allClientListWidget->row(i);
-        ui->allClientListWidget->setCurrentRow(row);
+        foreach(auto i, ui->allClientListWidget->findItems(text, Qt::MatchFixedString)) {
+            int row = ui->allClientListWidget->row(i);
+            ui->allClientListWidget->setCurrentRow(row);
+        }
     }
-
     QPoint globalPos = ui->connectListWidget->mapToGlobal(pos);
     menu->exec(globalPos);
 }
@@ -345,5 +369,14 @@ void ChatServerForm::on_connectListWidget_itemClicked(QListWidgetItem *item)
         int row = ui->allClientListWidget->row(i);
         ui->allClientListWidget->setCurrentRow(row);
     }
+}
+
+
+void ChatServerForm::on_newPushButton_clicked()
+{
+    ChatClientForm *chatClient = new ChatClientForm(0);
+    chatClient->show();
+    connect(chatClient, SIGNAL(destroyed()),
+            chatClient, SLOT(deleteLater()));
 }
 

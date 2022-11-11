@@ -19,44 +19,31 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QTreeWidget" name="treeWidget">
-      <property name="rootIsDecorated">
+     <widget class="QTableView" name="tableView">
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="contextMenuPolicy">
+       <enum>Qt::CustomContextMenu</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="showGrid">
        <bool>false</bool>
       </property>
-      <property name="uniformRowHeights">
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
        <bool>false</bool>
-      </property>
-      <property name="itemsExpandable">
-       <bool>false</bool>
-      </property>
-      <property name="allColumnsShowFocus">
-       <bool>false</bool>
-      </property>
-      <column>
-       <property name="text">
-        <string>ID</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>제품명</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>가격</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>재고량</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>품목</string>
-       </property>
-      </column>
+      </attribute>
      </widget>
      <widget class="QToolBox" name="toolBox">
       <property name="enabled">
@@ -70,7 +57,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>199</width>
+         <width>189</width>
          <height>310</height>
         </rect>
        </property>
@@ -189,7 +176,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>199</width>
+         <width>189</width>
          <height>310</height>
         </rect>
        </property>
@@ -200,38 +187,22 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QTreeWidget" name="searchTreeWidget">
-            <property name="rootIsDecorated">
+           <widget class="QTableView" name="searchTableView">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="showGrid">
              <bool>false</bool>
             </property>
-            <property name="itemsExpandable">
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
              <bool>false</bool>
-            </property>
-            <column>
-             <property name="text">
-              <string>ID</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>제품명</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>가격</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>재고량</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>품목</string>
-             </property>
-            </column>
+            </attribute>
            </widget>
           </item>
           <item>
@@ -287,7 +258,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>treeWidget</tabstop>
+  <tabstop>tableView</tabstop>
   <tabstop>idLineEdit</tabstop>
   <tabstop>productNameLineEdit</tabstop>
   <tabstop>priceLlineEdit</tabstop>
@@ -296,7 +267,7 @@
   <tabstop>clearPushButton</tabstop>
   <tabstop>addPushButton</tabstop>
   <tabstop>modifyPushButton</tabstop>
-  <tabstop>searchTreeWidget</tabstop>
+  <tabstop>searchTableView</tabstop>
   <tabstop>searchComboBox</tabstop>
   <tabstop>searchLineEdit</tabstop>
   <tabstop>searchPushButton</tabstop>

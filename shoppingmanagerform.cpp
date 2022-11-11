@@ -1,12 +1,9 @@
 #include "shoppingmanagerform.h"
 #include "ui_shoppingmanagerform.h"
-#include "clientitem.h"
-#include "productitem.h"
-#include "shoppingitem.h"
 
-#include <QFile>
 #include <QMenu>
 #include <QMessageBox>
+#include <QSqlQueryModel>
 
 ShoppingManagerForm::ShoppingManagerForm(QWidget *parent) :
     QWidget(parent),
@@ -15,298 +12,300 @@ ShoppingManagerForm::ShoppingManagerForm(QWidget *parent) :
     ui->setupUi(this);
 
     QList<int> sizes;
-    sizes << 640 << 480;
+    sizes << 640 << 480;            // 위젯 사이즈 설정
     ui->splitter->setSizes(sizes);
 
-    connect(ui->orderLineEdit, &QLineEdit::textChanged, this, [=](){
-        QString order = ui->orderLineEdit->text();
-#if 1
-        if(ui->productTreeWidget->currentItem()==nullptr) {
-            int price =
-                    (ui->shopTreeWidget->currentItem()->text(5).toInt())/(ui->shopTreeWidget->currentItem()->text(4).toInt());
-            int totalAmount = price * order.toInt();
-            ui->totalLineEdit->setText(QString::number(totalAmount));
-        }
-        else {
-            QString price = ui->productTreeWidget->currentItem()->text(2);
-            int amount = price.toInt() * order.toInt();
-            ui->totalLineEdit->setText(QString::number(amount));
-        }
-#else
-        if(ui->productTreeWidget->currentItem()!=nullptr) {
-            QString price = ui->productTreeWidget->currentItem()->text(2);
-            int amount = price.toInt() * order.toInt();
-            ui->totalLineEdit->setText(QString::number(amount));
-        }
-#endif
-    });
+    // header 사이즈 설정
+    ui->clientTreeWidget->header()->
+            setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->productTreeWidget->header()->
+            setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    ui->shopTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    q = new QSqlQueryModel;
+    q->setQuery("select * from orders order by o_id");
+    searchQuery = new QSqlQueryModel;
+    q->setHeaderData(0, Qt::Horizontal, tr("ID"));
+    q->setHeaderData(1, Qt::Horizontal, tr("clientName"));
+    q->setHeaderData(2, Qt::Horizontal, tr("productName"));
+    q->setHeaderData(3, Qt::Horizontal, tr("time"));
+    q->setHeaderData(4, Qt::Horizontal, tr("order"));
+    q->setHeaderData(5, Qt::Horizontal, tr("totalAmount"));
+
+    ui->shopTableView->setModel(q);
 
     QAction* removeAction = new QAction(tr("&Remove"));
     connect(removeAction, SIGNAL(triggered()), this, SLOT(removeItem()));
 
     menu = new QMenu;
     menu->addAction(removeAction);
-    ui->shopTreeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    ui->shopTreeWidget->header()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->clientTreeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->searchTreeWidget->header()->
-            setSectionResizeMode(QHeaderView::ResizeToContents);
-    connect(ui->shopTreeWidget, SIGNAL(customContextMenuRequested(QPoint)),
-        this, SLOT(showContextMenu(QPoint)));
 
+    // 엔터 입력시 검색 버튼 클릭
     connect(ui->searchLineEdit, SIGNAL(returnPressed()),
         this, SLOT(on_searchPushButton_clicked()));
 
-    QFile file("shoplist.txt");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
+/***************************lambda************************/
+    // 주문 수량이 바뀔때마다 자동으로 총액을 구해서 입력해주는 lambda식
+    connect(ui->orderLineEdit, &QLineEdit::textChanged, this, [=](){
+        QString order = ui->orderLineEdit->text();
 
-    QTextStream in(&file);
-    while (!in.atEnd()) {
-        QString line = in.readLine();
-        QList<QString> row = line.split(", ");
-        if (row.size()) {
-            int id = row[0].toInt();
-            int CID = row[1].toInt();
-            int PID = row[2].toInt();
-            int order = row[4].toInt();
-            int totalPrice = row[5].toInt();
-            ShoppingItem* s = new ShoppingItem(id, CID, PID, row[3], order, totalPrice);
-            ui->shopTreeWidget->addTopLevelItem(s);
-            shopList.insert(id, s);
+        // 제품 정보를 보여주는 TreeWidget이 없을 경우 주문 목록 TreeWidget에서 가격과 주문 총액을 계산
+        if(ui->productTreeWidget->currentItem()==nullptr) {
+            int row = ui->shopTableView->currentIndex().row();
+            int price =  // 가격 = 주문 수량/주문 총액
+                    (q->data(q->index(row, 5)).toInt())/(q->data(q->index(row, 4)).toInt());
+
+            int totalAmount = price * order.toInt();    //주문 총액
+            ui->totalLineEdit->setText(QString::number(totalAmount));
         }
-    }
-    file.close( );
+        // 제품 정보를 보여주는 TreeWidget이 있을 경우
+        else {
+            QString price = ui->productTreeWidget->currentItem()->text(2);  // 가격 가져옴
+            int amount = price.toInt() * order.toInt();
+            ui->totalLineEdit->setText(QString::number(amount));    // 주문 총액 계산
+        }
+    });
 }
 
 ShoppingManagerForm::~ShoppingManagerForm()
 {
     delete ui;
-    QFile file("shoplist.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
-
-    QTextStream out(&file);
-    for (const auto& v : shopList) {
-        ShoppingItem* s = v;
-        out << s->id() << ", " << s->getCID() << ", ";
-        out << s->getPID() << ", ";
-        out << s->getTime() << ", ";
-        out << s->getAmount() << ", ";
-        out << s->getTotalPrice() << "\n";
-    }
-    file.close( );
+    delete q;
+    delete searchQuery;
 }
 
-int ShoppingManagerForm::makeId()
+int ShoppingManagerForm::makeId()       // key 생성
 {
-    if (shopList.size()==0)
-    {
+    if (q->rowCount()==0)
         return 110001;
-    }
     else {
-        auto id = shopList.lastKey();
+        int i = q->rowCount();
+        auto id = q->data(q->index(i-1, 0)).toInt();
         return ++id;
     }
 }
 
-void ShoppingManagerForm::showContextMenu(const QPoint& pos) {
+void ShoppingManagerForm::removeItem() {    // 아이템 삭제 함수
 
-    QPoint globalPos = ui->shopTreeWidget->mapToGlobal(pos);
-    menu->exec(globalPos);
+    int row = ui->shopTableView->currentIndex().row();
+    int item = q->data(q->index(row, 0)).toInt();
+    q->setQuery(QString("delete from orders where o_id = '%1'").arg(item));
+    q->setQuery("select * from orders order by o_id");
 }
 
-void ShoppingManagerForm::removeItem() {
-
-    QTreeWidgetItem* item = ui->shopTreeWidget->currentItem();
-    if (item != nullptr) {
-        shopList.remove(item->text(0).toInt());
-        ui->shopTreeWidget->takeTopLevelItem(ui->shopTreeWidget->indexOfTopLevelItem(item));
-        // 제거후 업데이트
-        ui->shopTreeWidget->update();
-    }
-}
-
-void ShoppingManagerForm::shopReceiveData(ProductItem *p)
+void ShoppingManagerForm::receiveData(QTreeWidgetItem *c)
+    // ClientManagerForm에서 id, 고객 이름으로 검색된 Item을 가져오는 슬롯
 {
-
-    int id = p->id();
-    QString name = p->getName();
-    int price = p->getPrice();
-    int stock = p->getStock();
-    QString category = p->getCategory();
-    ProductItem* item = new ProductItem(id, name, price, stock, category);
-    ui->productTreeWidget->addTopLevelItem(item);
-
+    ui->clientTreeWidget->addTopLevelItem(c);     // 고객 정보 TreeWidget에 추가
 }
 
+void ShoppingManagerForm::shopReceiveData(QTreeWidgetItem *p)
+    // ProductManagerForm에서 id, 제품 이름, 품목으로 검색된 Item을 가져오는 슬롯
+{
+    ui->productTreeWidget->addTopLevelItem(p);     // 제품 정보 TreeWidget에 추가
+}
+
+// ShoppingManagerForm에서 고객 리스트, 제품 리스트를 검색해서 띄워주기
 void ShoppingManagerForm::on_showLineEdit_returnPressed()
 {
+    if(ui->showLineEdit->text() == nullptr) return;
+
     int i = ui->showComboBox->currentIndex();
 
-    if(i==0) {
+    if(i==0) {      // 고객 이름으로 검색할 경우
         ui->clientTreeWidget->clear();
         QString name = ui->showLineEdit->text();
-        emit clientDataSent(name);
+        emit clientDataSent(name);      // 고객 이름 전달해주는 시그널 발생
     }
 
-    if(i==1) {
+    if(i==1) {      // 제품 이름으로 검색할 경우
         ui->productTreeWidget->clear();
     QString name = ui->showLineEdit->text();
-        emit dataSent(name);
+        emit dataSent(name);            // 제품 이름 전달해주는 시그널 발생
     }
 
-    if(i==2) {
+    if(i==2) {      // 제품 품목으로 검색할 경우
         ui->productTreeWidget->clear();
         QString name = ui->showLineEdit->text();
-        emit categoryDataSent(name);
+        emit categoryDataSent(name);    // 제품 품목 전달해주는 시그널 발생
     }
 }
 
-void ShoppingManagerForm::on_clientTreeWidget_itemClicked(QTreeWidgetItem *item, int column)
+void ShoppingManagerForm::on_clientTreeWidget_itemClicked   // 고객 정보 TreeWidget 클릭시
+(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column);
-    ui->clientNameLineEdit->setText(item->text(0));
-//    QString text0 = item->text(0);
-//    QString text1 = item->text(1);
-//    ui->clientNameLineEdit->setText(text0+"("+text1+")");
+    ui->clientNameLineEdit->setText(item->text(0));     // 고객 이름 입력
 }
 
 
-void ShoppingManagerForm::on_productTreeWidget_itemClicked(QTreeWidgetItem *item, int column)
+void ShoppingManagerForm::on_productTreeWidget_itemClicked   // 제품 정보 TreeWidget 클릭시
+(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column);
-    ui->pdNameLlineEdit->setText(item->text(0));
+    ui->pdNameLlineEdit->setText(item->text(0));    // 제품 이름 입력
     QString order = ui->orderLineEdit->text();
+    // 주문량이 없다면 주문 총액에 제품 가격 입력
     if(order=="") {
     ui->totalLineEdit->setText(item->text(2));
     }
+    // 주문량이 있다면 총액 입력
     else {
-        int amount = order.toInt()*(item->text(2).toInt());
+        int amount = order.toInt()*(item->text(2).toInt());     // 총액 계산
         ui->totalLineEdit->setText(QString::number(amount));
     }
 }
 
-void ShoppingManagerForm::on_shopTreeWidget_itemClicked(QTreeWidgetItem *item, int column)
-{
-    ui->clientTreeWidget->clear();
-    ui->productTreeWidget->clear();
-    Q_UNUSED(column);
-    ui->idLineEdit->setText(item->text(0));
-    ui->clientNameLineEdit->setText(item->text(1));
-    ui->pdNameLlineEdit->setText(item->text(2));
-    ui->timeLlineEdit->setText(item->text(3));
-    ui->orderLineEdit->setText(item->text(4));
-    ui->totalLineEdit->setText(item->text(5));
-    emit clientIdSent(item->text(1).toInt());
-    emit productIdSent(item->text(2).toInt());
-}
-
-void ShoppingManagerForm::on_addPushButton_clicked()
+void ShoppingManagerForm::on_addPushButton_clicked()    // 추가 버튼 클릭시
 {
     QString time;
     int CID, PID, order, totalPrice;
-    int id = makeId( );
-    CID= ui->clientNameLineEdit->text().toInt();
+    int id = makeId();
+    CID = ui->clientNameLineEdit->text().toInt();
     PID = ui->pdNameLlineEdit->text().toInt();
     time = ui->timeLlineEdit->text();
+    order = ui->orderLineEdit->text().toInt();
     totalPrice = ui->totalLineEdit->text().toInt();
 
+    // 기존의 주문 목록을 이용하여 주문하는 경우(트리 위젯 X)
     if (ui->productTreeWidget->currentItem() == nullptr) {
         int stock = ui->productTreeWidget->topLevelItem(0)->text(3).toInt();
         qDebug() << stock;
         order = ui->orderLineEdit->text().toInt();
 
-        if (stock > order) {
-            emit(inventorySent(PID, order));
-            ShoppingItem* s = new ShoppingItem(id, CID, PID, time, order, totalPrice);
-            shopList.insert(id, s);
-            ui->shopTreeWidget->addTopLevelItem(s);
-        }
+        if (stock > order) {     // 재고가 주문보다 많을 경우 정상 주문
+            emit inventorySent(PID, order);     // 제품 ID와 주문량을 전달해주는 시그널 발생
+            q->setQuery(QString("call add_order('%1', '%2', '%3', '%4', '%5', '%6');")
+                        .arg(id).arg(CID).arg(PID).arg(time).arg(order).arg(totalPrice));
 
-        else if (stock < order) {
-            QMessageBox::warning(this, tr("ERROR"), tr("Inventory Overflow"));
+            q->setQuery("select * from orders order by o_id");
+        }
+        else if (stock < order) {       // 재고가 부족할 경우
+            QMessageBox::warning(this, tr("ERROR"), tr("Inventory Overflow"));      // 오류 메세지 표시
             return;
         }
     }
 
-    else {
+    else {      // 제품 정보 보여주는 트리 위젯이 있을 경우
         int stock = ui->productTreeWidget->currentItem()->text(3).toInt();
         order = ui->orderLineEdit->text().toInt();
 
-        if (stock < order) {
-            QMessageBox::warning(this, tr("ERROR"), tr("Inventory Overflow"));
+        if (stock < order) {        // 재고가 부족할 경우
+            QMessageBox::warning(this, tr("ERROR"), tr("Inventory Overflow"));      // 오류 메세지 표시
             return;
         }
 
-        else if (stock > order) {
-            emit(inventorySent(PID, order));
-            ShoppingItem* s = new ShoppingItem(id, CID, PID, time, order, totalPrice);
-            shopList.insert(id, s);
-            ui->shopTreeWidget->addTopLevelItem(s);
+        else if (stock > order) {         // 재고가 주문보다 많을 경우 정상 주문
+            emit inventorySent(PID, order);    // 제품 ID와 주문량을 전달해주는 시그널 발생
+            q->setQuery(QString("call add_order('%1', '%2', '%3', '%4', '%5', '%6');")
+                        .arg(id).arg(CID).arg(PID).arg(time).arg(order).arg(totalPrice));
+
+            q->setQuery("select * from orders order by o_id");
         }
     }
 }
 
-void ShoppingManagerForm::on_modifyPushButton_clicked()
+void ShoppingManagerForm::on_modifyPushButton_clicked()     // 수정버튼 클릭시
 {
-    QTreeWidgetItem* item = ui->shopTreeWidget->currentItem();
-    if (item != nullptr) {
-        int key = item->text(0).toInt();
-        ShoppingItem* s = shopList[key];
-        QString time;
-        int CID, PID, order, totalPrice, prevOrder;
-        CID= ui->clientNameLineEdit->text().toInt();
-        PID = ui->pdNameLlineEdit->text().toInt();
-        time = ui->timeLlineEdit->text();
-        totalPrice = ui->totalLineEdit->text().toInt();
-        prevOrder = item->text(4).toInt();
+    int id = ui->idLineEdit->text().toInt();
+    int row = ui->shopTableView->currentIndex().row();
+    int CID, PID, order, totalPrice, prevOrder; QString date;
 
+    CID = ui->clientNameLineEdit->text().toInt();
+    PID = ui->pdNameLlineEdit->text().toInt();
+    date = ui->timeLlineEdit->text();
+    order = ui->orderLineEdit->text().toInt();
+    totalPrice = ui->totalLineEdit->text().toInt();
+    prevOrder = q->data(q->index(row, 4)).toInt();      // 기존의 주문량 저장
 
-        if (ui->productTreeWidget->currentItem() == nullptr) {
-            int stock = ui->productTreeWidget->topLevelItem(0)->text(3).toInt();
-            qDebug() << stock;
-            order = ui->orderLineEdit->text().toInt();
+    // 기존의 주문 목록을 이용하여 주문하는 경우(트리 위젯 X)
+    if (ui->productTreeWidget->currentItem() == nullptr) {
+        int stock = ui->productTreeWidget->topLevelItem(0)->text(3).toInt();
+        qDebug() << stock;
+        order = ui->orderLineEdit->text().toInt();
 
-            if (stock > (order-prevOrder)) {
-                emit(inventorySent(PID, (order-prevOrder)));
-                s->setClient(CID);
-                s->setProduct(PID);
-                s->setTime(time);
-                s->setAmount(order);
-                s->setTotalPrice(totalPrice);
-                shopList[key] = s;
-            }
+        if (stock > (order-prevOrder)) {    // 현재 주문량이 재고보다 적을 경우 정상 주문
+            emit inventorySent(PID, (order-prevOrder));
+            q->setQuery(QString("update orders set o_c_id = '%1', o_p_id = '%2',"
+                                "o_date = '%3', o_amount = '%4', o_total = '%5' where o_id = '%6'")
+                        .arg(CID).arg(PID).arg(date).arg(order).arg(totalPrice).arg(id));
 
-            else if (stock < (order-prevOrder)) {
-                QMessageBox::warning(this, tr("ERROR"), tr("Inventory Overflow"));
-                return;
-            }
+            q->setQuery("select * from orders order by o_id");
         }
 
-        else {
-            int stock = ui->productTreeWidget->currentItem()->text(3).toInt();
-            order = ui->orderLineEdit->text().toInt();
+        else if (stock < (order-prevOrder)) {     // 현재 주문량이 재고보다 많을 경우
+            QMessageBox::warning(this, tr("ERROR"), tr("Inventory Overflow"));      // 에러메세지 표시
+            return;
+        }
+    }
 
-            if (stock < (order-prevOrder)) {
-                QMessageBox::warning(this, tr("ERROR"), tr("Inventory Overflow"));
-                return;
-            }
+    else {      // 제품 정보 보여주는 트리 위젯이 있을 경우
+        int stock = ui->productTreeWidget->currentItem()->text(3).toInt();
+        order = ui->orderLineEdit->text().toInt();
 
-            else if (stock > (order-prevOrder)) {
-                emit(inventorySent(PID, (order-prevOrder)));
-                s->setClient(CID);
-                s->setProduct(PID);
-                s->setTime(time);
-                s->setAmount(order);
-                s->setTotalPrice(totalPrice);
-                shopList[key] = s;
-            }
+        if (stock < (order-prevOrder)) {     // 재고가 부족하다면
+            QMessageBox::warning(this, tr("ERROR"), tr("Inventory Overflow"));      // 에러메세지 표시
+            return;
+        }
+
+        else if (stock > (order-prevOrder)) {      // 현재 주문량이 재고보다 적다면
+            emit inventorySent(PID, (order-prevOrder));    // 현재 주문량을 전달하는 시그널 발생
+            q->setQuery(QString("update orders set o_c_id = '%1', o_p_id = '%2',"
+                                "o_date = '%3', o_amount = '%4', o_total = '%5' where o_id = '%6'")
+                        .arg(CID).arg(PID).arg(date).arg(order).arg(totalPrice).arg(id));
+
+            q->setQuery("select * from orders order by o_id");
         }
     }
 }
 
-void ShoppingManagerForm::on_clearPushButton_clicked()
+void ShoppingManagerForm::on_searchPushButton_clicked()     // 검색 버튼 클릭시
+{
+    if(ui->searchLineEdit->text()==nullptr) return;
+
+    int searchCase = ui->searchComboBox->currentIndex();
+    searchQuery->setQuery("select * from orders");
+    searchQuery->setHeaderData(0, Qt::Horizontal, tr("ID"));
+    searchQuery->setHeaderData(1, Qt::Horizontal, tr("clientName"));
+    searchQuery->setHeaderData(2, Qt::Horizontal, tr("productName"));
+    searchQuery->setHeaderData(3, Qt::Horizontal, tr("time"));
+    searchQuery->setHeaderData(4, Qt::Horizontal, tr("order"));
+    searchQuery->setHeaderData(5, Qt::Horizontal, tr("totalAmount"));
+
+    switch(searchCase) {
+    case 0: {
+        int id = ui->searchLineEdit->text().toInt();
+        searchQuery->setQuery(
+                    QString("select * from orders where o_id = '%1'").arg(id));
+        ui->searchTableView->setModel(searchQuery);
+        break;
+    }
+    case 1: {
+        int CID = ui->searchLineEdit->text().toInt();
+        searchQuery->setQuery(
+                    QString("select * from orders where o_c_id = '%1'").arg(CID));
+        ui->searchTableView->setModel(searchQuery);
+        break;
+    }
+    case 2: {
+        int PID = ui->searchLineEdit->text().toInt();
+        searchQuery->setQuery(
+                    QString("select * from orders where o_p_id = '%1'").arg(PID));
+        ui->searchTableView->setModel(searchQuery);
+        break;
+    }
+    case 3: {
+        QString date = ui->searchLineEdit->text();
+        searchQuery->setQuery(
+                    QString("select * from orders where o_date like '%%1%'").arg(date));
+        ui->searchTableView->setModel(searchQuery);
+        break;
+    }
+    }
+}
+
+void ShoppingManagerForm::on_clearPushButton_clicked()      // 클리어 버튼 클릭시
 {
     ui->idLineEdit->clear();
     ui->clientNameLineEdit->clear();
@@ -316,45 +315,25 @@ void ShoppingManagerForm::on_clearPushButton_clicked()
     ui->totalLineEdit->clear();
 }
 
-
-void ShoppingManagerForm::on_searchPushButton_clicked()
+void ShoppingManagerForm::on_shopTableView_customContextMenuRequested(const QPoint &pos)
 {
-    ui->searchTreeWidget->clear();
-    int i = ui->searchComboBox->currentIndex();
-
-    if (i == 0 || i == 1 || i == 2) {
-        auto items = ui->shopTreeWidget->findItems(ui->searchLineEdit->text(),
-                                                   Qt::MatchCaseSensitive, i);
-
-        foreach(auto i, items) {
-            ShoppingItem* s = static_cast<ShoppingItem*>(i);
-            int id = s->id();
-            int clientId = s->getCID();
-            int productId = s->getPID();
-            QString sellTime = s->getTime();
-            int sellAmount = s->getAmount();
-            int totalPrice = s->getTotalPrice();
-            ShoppingItem* item = new ShoppingItem(id, clientId, productId, sellTime, sellAmount, totalPrice);
-            ui->searchTreeWidget->addTopLevelItem(item);
-        }
-    }
-
-    else {
-        auto items = ui->shopTreeWidget->findItems(ui->searchLineEdit->text(),
-                                               Qt::MatchContains | Qt::MatchCaseSensitive, i);
-
-        foreach(auto i, items) {
-            ShoppingItem* s = static_cast<ShoppingItem*>(i);
-            int id = s->id();
-            int clientId = s->getCID();
-            int productId = s->getPID();
-            QString sellTime = s->getTime();
-            int sellAmount = s->getAmount();
-            int totalPrice = s->getTotalPrice();
-            ShoppingItem* item = new ShoppingItem(id, clientId, productId, sellTime, sellAmount, totalPrice);
-            ui->searchTreeWidget->addTopLevelItem(item);
-        }
-    }
-
+    QPoint globalPos = ui->shopTableView->mapToGlobal(pos);
+    if(ui->shopTableView->indexAt(pos).isValid())
+            menu->exec(globalPos);
 }
 
+void ShoppingManagerForm::on_shopTableView_clicked(const QModelIndex &index)
+{
+    int row = index.row();
+    ui->idLineEdit->setText(q->data(q->index(row, 0)).toString());
+    ui->clientNameLineEdit->setText(q->data(q->index(row, 1)).toString());
+    ui->pdNameLlineEdit->setText((q->data(q->index(row, 2)).toString()));
+    ui->timeLlineEdit->setText(q->data(q->index(row, 3)).toString());
+    ui->orderLineEdit->setText(q->data(q->index(row, 4)).toString());
+    ui->totalLineEdit->setText(q->data(q->index(row, 5)).toString());
+
+    ui->clientTreeWidget->clear();
+    ui->productTreeWidget->clear();
+    emit clientIdSent(q->data(q->index(row, 1)).toInt());   // 고객 ID 전달
+    emit productIdSent(q->data(q->index(row, 2)).toInt());  // 제품 ID 전달
+}

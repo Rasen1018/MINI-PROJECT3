@@ -33,7 +33,7 @@
           <bool>false</bool>
          </property>
          <property name="sizeAdjustPolicy">
-          <enum>QAbstractScrollArea::AdjustIgnored</enum>
+          <enum>QAbstractScrollArea::AdjustToContents</enum>
          </property>
          <property name="showDropIndicator" stdset="0">
           <bool>true</bool>

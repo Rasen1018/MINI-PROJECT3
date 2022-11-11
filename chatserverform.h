@@ -14,16 +14,6 @@ class LogThread;
 class QListWidgetItem;
 class ChatClientForm;
 
-//typedef enum {
-//    Chat_Login,           // 로그인(서버 접속)
-//    Chat_In,              // 채팅방 입장
-//    Chat_Talk,            // 채팅
-//    Chat_Out,             // 채팅방 퇴장 --> 초대 가능
-//    Chat_LogOut,          // 로그 아웃(서버 끊김) --> 초대 불가능
-//    Chat_Invite,          // 초대
-//    Chat_KickOut          // 강퇴
-//} Chat_Status;
-
 namespace Ui {
 class ChatServerForm;
 }
@@ -51,7 +41,9 @@ signals:
 private slots:
     /* 채팅 서버 */
     void receiveData();
+    void getAllClient(QStringList);
     void removeClient();
+    void widgetUpdate();
 
     /* 파일서버 */
     void readClient();
@@ -61,8 +53,8 @@ private slots:
     void on_actionKickOut_triggered();
     void on_createPushButton_clicked();
     void on_connectListWidget_customContextMenuRequested(const QPoint &pos);
-
     void on_connectListWidget_itemClicked(QListWidgetItem *item);
+    void on_newPushButton_clicked();
 
 private:
     const int BLOCK_SIZE = 1024;

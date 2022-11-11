@@ -1,13 +1,11 @@
 #ifndef CLIENTMANAGERFORM_H
 #define CLIENTMANAGERFORM_H
 
+#include "clientitem.h"
 #include <QWidget>
 #include <QHash>
 
-#include "clientitem.h"
-
 class QMenu;
-class QTableView;
 class QTreeWidgetItem;
 class QSqlQueryModel;
 
@@ -22,14 +20,18 @@ class ClientManagerForm : public QWidget
 public:
     explicit ClientManagerForm(QWidget *parent = nullptr);
     ~ClientManagerForm();
-    bool createConnection();
 
 signals:
+    void updateList();
     void getAllClient(QStringList);
+    void clientItemSent(QTreeWidgetItem*);
 
 private slots:
     /* QTreeWidget을 위한 슬롯 */
     void removeItem();
+    void sendClientList();
+    void receiveData(QString);
+    void receiveData(int);
     /* QAction을 위한 슬롯 */
     void on_addPushButton_clicked();
     void on_modifyPushButton_clicked();
@@ -37,12 +39,10 @@ private slots:
     void on_clearPushButton_clicked();
 
     void on_tableView_customContextMenuRequested(const QPoint &pos);
-
     void on_tableView_clicked(const QModelIndex &index);
 
 private:
-    int makeId();
-    QMap<int, ClientItem*> clientList;
+    int makeId();   //rowcount()를 활용한 key 생성
     Ui::ClientManagerForm *ui;
     QSqlQueryModel *q;
     QSqlQueryModel *searchQuery;
