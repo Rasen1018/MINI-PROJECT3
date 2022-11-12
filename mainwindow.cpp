@@ -27,23 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mdiArea->addSubWindow(productForm);
     ui->mdiArea->addSubWindow(shoppingForm);
     ui->mdiArea->setActiveSubWindow(mdi);
-#if 0
-    // ShoppingForm에서 고객 이름을 전달해주면 ClientForm에서 그 이름을 받아 item을 검색하는 슬롯 연결
-    connect(shoppingForm, SIGNAL(clientDataSent(QString)), clientForm, SLOT(receiveData(QString)));
-    // ShoppingForm에서 고객 ID를 전달해주면 ClientForm에서 그 ID를 받아 item을 검색하는 슬롯 연결
-    connect(shoppingForm, SIGNAL(clientIdSent(int)), clientForm, SLOT(receiveData(int)));
-    // ClientForm에서 위에서 전달받은 고객 ID, 이름을 검색해 일치하는 item을 ShoppingForm에 가져오는 슬롯 연결
-    connect(clientForm, SIGNAL(clientDataSent(ClientItem*)), shoppingForm, SLOT(receiveData(ClientItem*)));
 
-    // ShoppingForm에서 제품 이름을 전달해주면 ProductForm에서 그 이름을 받아 item을 검색하는 슬롯 연결
-    connect(shoppingForm, SIGNAL(dataSent(QString)), productForm, SLOT(receiveName(QString)));
-    // ShoppingForm에서 제품 ID를 전달해주면 ProductForm에서 그 ID를 받아 item을 검색하는 슬롯 연결
-    connect(shoppingForm, SIGNAL(productIdSent(int)), productForm, SLOT(receiveName(int)));
-    // ShoppingForm에서 제품 품목을 전달해주면 ProductForm에서 그 품목을 받아 item을 검색하는 슬롯 연결
-    connect(shoppingForm, SIGNAL(categoryDataSent(QString)), productForm, SLOT(receiveCategory(QString)));
-    // ProductForm에서 위에서 전달받은 제품 ID, 이름, 품목을 검색해 일치하는 item을 ShoppingForm에 가져오는 슬롯 연결
-    connect(productForm, SIGNAL(productItemSent(QTreeWidgetItem*)), shoppingForm, SLOT(shopReceiveData(ProductItem*)));
-#endif
     // ShoppingForm에서 고객 이름을 전달해주면 ClientForm에서 그 이름을 받아 item을 검색하는 슬롯 연결
     connect(shoppingForm, SIGNAL(clientDataSent(QString)), clientForm, SLOT(receiveData(QString)));
     // ShoppingForm에서 고객 ID를 전달해주면 ClientForm에서 그 ID를 받아 item을 검색하는 슬롯 연결

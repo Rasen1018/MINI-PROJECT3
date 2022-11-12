@@ -5,6 +5,8 @@
 #include <QSqlDatabase>
 #include <QSqlQueryModel>
 #include <QSqlError>
+#include <QTreeWidgetItem>
+#include <QStandardItemModel>
 
 ClientManagerForm::ClientManagerForm(QWidget *parent) :
     QWidget(parent),
@@ -16,9 +18,9 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     sizes << 640 << 480;
     ui->splitter->setSizes(sizes);
 
+    /*우클릭으로 고객 정보 삭제*/
     QAction* removeAction = new QAction(tr("&Remove"));
     connect(removeAction, SIGNAL(triggered()), SLOT(removeItem()));
-
     menu = new QMenu;
     menu->addAction(removeAction);
 
@@ -30,10 +32,12 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     connect(ui->modifyPushButton, SIGNAL(clicked(bool)), this, SLOT(sendClientList()));
     connect(removeAction, SIGNAL(triggered()), SLOT(sendClientList()));
 
+    // Model 생성
     q = new QSqlQueryModel;
-    searchQuery = new QSqlQueryModel;
+    searchQuery = new QSqlQueryModel;           // 검색을 위한 QueryModel
     q->setQuery("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
-                "from client order by c_id");
+                "from client order by c_id");   //  CLIENT 정보 SELECT문
+    // QueryModel 헤더 이름 설정
     q->setHeaderData(0, Qt::Horizontal, tr("ID"));
     q->setHeaderData(1, Qt::Horizontal, tr("Name"));
     q->setHeaderData(2, Qt::Horizontal, tr("Gender"));
@@ -41,7 +45,7 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     q->setHeaderData(4, Qt::Horizontal, tr("Phone Number"));
     q->setHeaderData(5, Qt::Horizontal, tr("Address"));
 
-    ui->tableView->setModel(q);
+    ui->tableView->setModel(q);     // Viewer에 Model 표시
 }
 
 ClientManagerForm::~ClientManagerForm()
@@ -84,6 +88,7 @@ void ClientManagerForm::sendClientList() {
 }
 
 void ClientManagerForm::receiveData(QString name) {
+#if 0
     QSqlQueryModel query;
     query.setQuery(QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS from client "
                    "where c_name like '%%1%' order by c_id").arg(name));
@@ -95,6 +100,28 @@ void ClientManagerForm::receiveData(QString name) {
         }
         emit clientItemSent(item);
     }
+#else
+    QModelIndexList indexes =
+            q->match(q->index(0, 1), Qt::EditRole, name, -1, Qt::MatchFlags(Qt::MatchContains));
+    qDebug() << indexes;
+
+//    foreach(auto ix, indexes) {
+//        int id = clientModel->data(ix.siblingAtColumn(0)).toInt(); //c->id();
+//        QString name = clientModel->data(ix.siblingAtColumn(1)).toString();
+//        QString number = clientModel->data(ix.siblingAtColumn(2)).toString();
+//        QString address = clientModel->data(ix.siblingAtColumn(3)).toString();
+//        QStringList strings;
+//        strings << QString::number(id) << name << number << address;
+
+//        QList<QStandardItem *> items;
+//        for (int i = 0; i < 4; ++i) {
+//            items.append(new QStandardItem(strings.at(i)));
+//        }
+
+//        searchModel->appendRow(items);
+//        ui->searchTableView->resizeColumnsToContents();
+//    }
+#endif
 }
 
 void ClientManagerForm::receiveData(int id) {

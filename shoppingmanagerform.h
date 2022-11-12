@@ -29,11 +29,12 @@ signals:
     void categoryDataSent(QString);
 
 private slots:
-    /* QTreeWidget을 위한 슬롯 */
+    void on_showLineEdit_returnPressed();
+    /* 다른 객체에 데이터 전달을 위한 슬롯 */
     void removeItem();
     void receiveData(QTreeWidgetItem*);
     void shopReceiveData(QTreeWidgetItem*);
-    void on_showLineEdit_returnPressed();
+    /*QTreeWidget을 위한 슬롯*/
     void on_clientTreeWidget_itemClicked(QTreeWidgetItem *item, int column);
     void on_productTreeWidget_itemClicked(QTreeWidgetItem *item, int column);
     /* QAction을 위한 슬롯 */
@@ -41,9 +42,8 @@ private slots:
     void on_modifyPushButton_clicked();
     void on_clearPushButton_clicked();
     void on_searchPushButton_clicked();
-
+    /*QTableView을 위한 슬롯*/
     void on_shopTableView_customContextMenuRequested(const QPoint &pos);
-
     void on_shopTableView_clicked(const QModelIndex &index);
 
 private:

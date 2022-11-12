@@ -1,7 +1,6 @@
 #ifndef CLIENTMANAGERFORM_H
 #define CLIENTMANAGERFORM_H
 
-#include "clientitem.h"
 #include <QWidget>
 #include <QHash>
 
@@ -22,12 +21,13 @@ public:
     ~ClientManagerForm();
 
 signals:
+    /* 다른 객체에 데이터 전달을 위한 시그널 */
     void updateList();
     void getAllClient(QStringList);
     void clientItemSent(QTreeWidgetItem*);
 
 private slots:
-    /* QTreeWidget을 위한 슬롯 */
+    /* 다른 객체에 데이터 전달을 위한 슬롯 */
     void removeItem();
     void sendClientList();
     void receiveData(QString);
@@ -37,7 +37,7 @@ private slots:
     void on_modifyPushButton_clicked();
     void on_searchPushButton_clicked();
     void on_clearPushButton_clicked();
-
+    /* QTableView를 위한 슬롯 */
     void on_tableView_customContextMenuRequested(const QPoint &pos);
     void on_tableView_clicked(const QModelIndex &index);
 

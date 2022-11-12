@@ -25,7 +25,7 @@ private slots:
     void on_actionShopping_triggered();
 
 private:
-    bool createConnection();
+    bool createConnection();    // DB 접속
     Ui::MainWindow *ui;
     ClientManagerForm *clientForm;
     ProductManagerForm *productForm;

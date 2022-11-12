@@ -26,7 +26,7 @@ signals:
     void productItemSent(QTreeWidgetItem*);
 
 private slots:
-    /* QTreeWidget을 위한 슬롯 */
+    /* 다른 객체에 데이터 전달을 위한 슬롯 */
     void removeItem();
     void nameReceived(QString);
     void categoryReceived(QString);
@@ -37,8 +37,8 @@ private slots:
     void on_addPushButton_clicked();
     void on_modifyPushButton_clicked();
     void on_searchPushButton_clicked();
+   /* QTableView를 위한 슬롯 */
     void on_tableView_clicked(const QModelIndex &index);
-
     void on_tableView_customContextMenuRequested(const QPoint &pos);
 
 private:

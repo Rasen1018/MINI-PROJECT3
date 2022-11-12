@@ -28,7 +28,7 @@ void LogThread::appendData(QTreeWidgetItem* item)
 void LogThread::saveData()
 {
     if(itemList.count() > 0) {
-        QFile file(filename);
+        QFile file("../ShoppingIntegratedManagement/log/" + filename);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
             return;
 
