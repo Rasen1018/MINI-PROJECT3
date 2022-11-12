@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ChatClientForm</class>
+ <widget class="QWidget" name="ChatClientForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>391</width>
+    <height>282</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Chat Client</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLineEdit" name="ipLineEdit">
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="placeholderText">
+      <string>Server IP Address</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="portLineEdit">
+     <property name="inputMask">
+      <string>00000;_</string>
+     </property>
+     <property name="text">
+      <string>2000</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="idLabel">
+     <property name="text">
+      <string>ID</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLineEdit" name="idLineEdit">
+     <property name="inputMask">
+      <string>99999</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QPushButton" name="logInPushButton">
+     <property name="text">
+      <string>Log In</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="4">
+    <widget class="QLineEdit" name="inputLineEdit"/>
+   </item>
+   <item row="2" column="4">
+    <widget class="QPushButton" name="enterPushButton">
+     <property name="text">
+      <string>Enter</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="sendPushButton">
+     <property name="text">
+      <string>Send</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>Log Out</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="4">
+    <widget class="QPushButton" name="quitPushButton">
+     <property name="text">
+      <string>Quit</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="5">
+    <widget class="QTextEdit" name="chatTextEdit">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>idLineEdit</tabstop>
+  <tabstop>logInPushButton</tabstop>
+  <tabstop>ipLineEdit</tabstop>
+  <tabstop>portLineEdit</tabstop>
+  <tabstop>chatTextEdit</tabstop>
+  <tabstop>inputLineEdit</tabstop>
+  <tabstop>enterPushButton</tabstop>
+  <tabstop>sendPushButton</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>quitPushButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>quitPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ChatClientForm</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>339</x>
+     <y>258</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
