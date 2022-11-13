@@ -3,9 +3,9 @@
 
 #include <QWidget>
 #include <QHash>
+#include <QStandardItem>
 
 class QMenu;
-class QTreeWidgetItem;
 class QSqlQueryModel;
 
 namespace Ui {
@@ -24,7 +24,7 @@ signals:
     /* 다른 객체에 데이터 전달을 위한 시그널 */
     void updateList();
     void getAllClient(QStringList);
-    void clientItemSent(QTreeWidgetItem*);
+    void clientItemSent(QList<QStandardItem *>);
 
 private slots:
     /* 다른 객체에 데이터 전달을 위한 슬롯 */
@@ -38,6 +38,7 @@ private slots:
     void on_searchPushButton_clicked();
     void on_clearPushButton_clicked();
     /* QTableView를 위한 슬롯 */
+    void setHeaderStyle();
     void on_tableView_customContextMenuRequested(const QPoint &pos);
     void on_tableView_clicked(const QModelIndex &index);
 

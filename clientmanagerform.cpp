@@ -37,13 +37,9 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     searchQuery = new QSqlQueryModel;           // 검색을 위한 QueryModel
     q->setQuery("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                 "from client order by c_id");   //  CLIENT 정보 SELECT문
-    // QueryModel 헤더 이름 설정
-    q->setHeaderData(0, Qt::Horizontal, tr("ID"));
-    q->setHeaderData(1, Qt::Horizontal, tr("Name"));
-    q->setHeaderData(2, Qt::Horizontal, tr("Gender"));
-    q->setHeaderData(3, Qt::Horizontal, tr("Age"));
-    q->setHeaderData(4, Qt::Horizontal, tr("Phone Number"));
-    q->setHeaderData(5, Qt::Horizontal, tr("Address"));
+
+    // TreeView 헤더 스타일 설정
+    setHeaderStyle();
 
     ui->tableView->setModel(q);     // Viewer에 Model 표시
 }
@@ -54,131 +50,154 @@ ClientManagerForm::~ClientManagerForm()
     delete searchQuery;
 }
 
+/***********************************************************************************************/
 int ClientManagerForm::makeId( )    // 고객 ID 생성 함수
 {
-    if(q->rowCount()==0) {
+    if(q->rowCount()==0) {      // DB에 데이터가 없을 경우 ID 1001부터 시작
         return 1001;
-    } else {
+    } else {                                            // 데이터가 있을 경우
         int i = q->rowCount();
-        auto id = q->data(q->index(i-1,0)).toInt();
+        auto id = q->data(q->index(i-1,0)).toInt();     // DB 데이터의 마지막 ID를 가져와서 ++id
         return ++id;
     }
 }
 
-void ClientManagerForm::removeItem()    // TreeWidget에 있는 고객 리스트 삭제
+
+//___________고객 정보 삭제____________//
+void ClientManagerForm::removeItem()
 {
     int row = ui->tableView->currentIndex().row();
-    int item = q->data(q->index(row, 0)).toInt();
-    q->setQuery(QString("delete from client where c_id = '%1'").arg(item));
+    int item = q->data(q->index(row, 0)).toInt();       // Query Model에서 삭제하려는 고객의 row를 통해 id를 가져옴
+    /* delect query문 */
+    q->setQuery(QString("delete from client where c_id = '%1'").arg(item));     // id를 argment로 받음
     q->setQuery("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                 "from client order by c_id");
 }
 
+
+//___________채팅 서버에 고객 리스트 전달____________//
 void ClientManagerForm::sendClientList() {
     emit updateList();
-    for(int i=0; i< q->rowCount(); i++) {
+    for(int i=0; i< q->rowCount(); i++) {       // DB 끝까지 for문 반복
         QString id="";
         QString name="";
-        id = q->data(q->index(i, 0)).toString();
+        id = q->data(q->index(i, 0)).toString();    // DB에서 순차적으로 데이터 가져옴
         name = q->data(q->index(i,1)).toString();
         QStringList list;
-        list << id << name;
+        list << id << name;         // id, 이름 전달
         emit getAllClient(list);
     }
 }
 
+//___________shoppingManagerForm에 StandardItem 전달____________//
 void ClientManagerForm::receiveData(QString name) {
-#if 0
-    QSqlQueryModel query;
-    query.setQuery(QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS from client "
-                   "where c_name like '%%1%' order by c_id").arg(name));
 
-    for(int i=0;i<query.rowCount();i++) {
-        QTreeWidgetItem *item = new QTreeWidgetItem;
-        for(int j = 0; j<6; j++) {
-            item->setText(j, query.data(query.index(i, j)).toString());
-        }
-        emit clientItemSent(item);
-    }
-#else
     QModelIndexList indexes =
             q->match(q->index(0, 1), Qt::EditRole, name, -1, Qt::MatchFlags(Qt::MatchContains));
-    qDebug() << indexes;
+          //query model에서 q->index(0, 1)의 데이터와 name을 비교해서 데이터의 내용이 name을 포함한다면[flags(Qt::MatchContains)]
+          //해당하는 index를 전부 리스트에 저장
 
-//    foreach(auto ix, indexes) {
-//        int id = clientModel->data(ix.siblingAtColumn(0)).toInt(); //c->id();
-//        QString name = clientModel->data(ix.siblingAtColumn(1)).toString();
-//        QString number = clientModel->data(ix.siblingAtColumn(2)).toString();
-//        QString address = clientModel->data(ix.siblingAtColumn(3)).toString();
-//        QStringList strings;
-//        strings << QString::number(id) << name << number << address;
+    foreach(auto idx, indexes) {        // DB의 모든 데이터 가져오기
+        int id = q->data(idx.siblingAtColumn(0)).toInt();
+        QString name = q->data(idx.siblingAtColumn(1)).toString();
+        QString gender = q->data(idx.siblingAtColumn(2)).toString();
+        int age = q->data(idx.siblingAtColumn(3)).toInt();
+        QString phoneNum = q->data(idx.siblingAtColumn(4)).toString();
+        QString address = q->data(idx.siblingAtColumn(5)).toString();
 
-//        QList<QStandardItem *> items;
-//        for (int i = 0; i < 4; ++i) {
-//            items.append(new QStandardItem(strings.at(i)));
-//        }
+        QStringList strings;        // stringList에 저장
+        strings << QString::number(id) << name << gender
+                << QString::number(age) << phoneNum << address;
 
-//        searchModel->appendRow(items);
-//        ui->searchTableView->resizeColumnsToContents();
-//    }
-#endif
+        QList<QStandardItem *> item;        // stringList->item으로 저장
+        for (int i = 0; i < 6; ++i) {
+            item.append(new QStandardItem(strings.at(i)));
+        }
+        emit clientItemSent(item);      // QList<QStandardItem *> item 전달
+    }
 }
 
+
+//___________shoppingManagerForm에 StandardItem 전달____________//
 void ClientManagerForm::receiveData(int id) {
 
-    QSqlQueryModel query;
-    query.setQuery(QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS from client "
-                   "where c_id = '%1'").arg(id));
+    QModelIndexList indexes =
+            q->match(q->index(0, 0), Qt::EditRole, id, 1, Qt::MatchFlags(Qt::MatchCaseSensitive));
+          //query model에서 q->index(0, 0)의 데이터와 id를 비교해서 데이터의 내용이 id와 일치한다면[flags(Qt::MatchCaseSensitive)]
+          //해당하는 index를 전부 리스트에 저장
 
-    QTreeWidgetItem *item = new QTreeWidgetItem;
-    for(int i=0;i<6;i++) {
-        item->setText(i, query.data(query.index(0, i)).toString());
+    foreach(auto idx, indexes) {        // DB의 모든 데이터 가져오기
+        int id = q->data(idx.siblingAtColumn(0)).toInt();
+        QString name = q->data(idx.siblingAtColumn(1)).toString();
+        QString gender = q->data(idx.siblingAtColumn(2)).toString();
+        int age = q->data(idx.siblingAtColumn(3)).toInt();
+        QString phoneNum = q->data(idx.siblingAtColumn(4)).toString();
+        QString address = q->data(idx.siblingAtColumn(5)).toString();
+
+        QStringList strings;        // stringList에 저장
+        strings << QString::number(id) << name << gender
+                << QString::number(age) << phoneNum << address;
+
+        QList<QStandardItem *> item;        // stringList->item으로 저장
+        for (int i = 0; i < 6; ++i) {
+            item.append(new QStandardItem(strings.at(i)));
+        }
+        emit clientItemSent(item);      // QList<QStandardItem *> item 전달
     }
-    emit clientItemSent(item);
 }
 
+
+/***********************************************************************************************/
 void ClientManagerForm::on_addPushButton_clicked()  // 추가 버튼 사용자 슬롯
 {
     int id = makeId();
-    int age;
-    QString name, gender, phoneNum, adr;
-    name = ui->nameLineEdit->text();
-    gender = ui->genderLineEdit->text();
-    age = ui->ageLineEdit->text().toInt();
-    phoneNum = ui->phoneNumberLineEdit->text();
-    adr = ui->addressLineEdit->text();
+    QString name = ui->nameLineEdit->text();
+    QString gender = ui->genderLineEdit->text();
+    int age = ui->ageLineEdit->text().toInt();
+    QString phoneNum = ui->phoneNumberLineEdit->text();
+    QString adr = ui->addressLineEdit->text();
+
+    // ORACLE SQL PROCEDURE 실행
     q->setQuery(QString("call add_client('%1', '%2', '%3', '%4', '%5', '%6');")
             .arg(id).arg(name).arg(gender).arg(age).arg(phoneNum).arg(adr));
 
+    // ORDER BY로 정렬
     q->setQuery("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                 "from client order by c_id");
 }
 
-void ClientManagerForm::on_modifyPushButton_clicked()   // 수정 버튼 사용자 슬롯
+
+//___________수정 버튼 사용자 슬롯____________//
+void ClientManagerForm::on_modifyPushButton_clicked()
 {
     int id = ui->idLineEdit->text().toInt();
-    int age; QString name, gender, phoneNum, adr;
+    QString name = ui->nameLineEdit->text();
+    QString gender = ui->genderLineEdit->text();
+    int age = ui->ageLineEdit->text().toInt();
+    QString phoneNum = ui->phoneNumberLineEdit->text();
+    QString adr = ui->addressLineEdit->text();
 
-    name = ui->nameLineEdit->text();
-    gender = ui->genderLineEdit->text();
-    age = ui->ageLineEdit->text().toInt();
-    phoneNum = ui->phoneNumberLineEdit->text();
-    adr = ui->addressLineEdit->text();
-
+    // UPDATE QUERY 문
     q->setQuery(QString("update client set c_name ='%1', c_gender = '%2', c_age = '%3',"
                         "c_phoneNum = '%4', c_address = '%5' where c_id = '%6';")
                          .arg(name).arg(gender).arg(age).arg(phoneNum).arg(adr).arg(id));
-
+    // ORDER BY로 정렬
     q->setQuery("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                 "from client order by c_id");
 }
 
-void ClientManagerForm::on_searchPushButton_clicked()   // 검색 버튼 사용자 슬롯
+
+
+//___________검색 버튼 사용자 슬롯____________//
+void ClientManagerForm::on_searchPushButton_clicked()
 {
     if(ui->searchLineEdit->text() == nullptr) return;
-    int category = ui->searchComboBox->currentIndex();
+    int category = ui->searchComboBox->currentIndex();      // comboBox 별로 항목을 다르게 검색
+
+    // 검색을 위한 QUERYMODEL에 SELECT QUERY 문
     searchQuery->setQuery("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                                  "from client order by c_id");
+    // header 설정
     searchQuery->setHeaderData(0, Qt::Horizontal, tr("ID"));
     searchQuery->setHeaderData(1, Qt::Horizontal, tr("Name"));
     searchQuery->setHeaderData(2, Qt::Horizontal, tr("Gender"));
@@ -187,43 +206,57 @@ void ClientManagerForm::on_searchPushButton_clicked()   // 검색 버튼 사용�
     searchQuery->setHeaderData(5, Qt::Horizontal, tr("Address"));
 
     switch(category) {
-    case 0: {
+    case 0: {   // 아이디 검색
         int id = ui->searchLineEdit->text().toInt();
+
+        // 검색을 위한 WHERE 문
         searchQuery->setQuery(
                     QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                                       "from client where c_id = '%1'").arg(id));
         ui->searchTableView->setModel(searchQuery);
         break;}
-    case 1: {
+
+    case 1: {   // 이름 검색
         QString name = ui->searchLineEdit->text();
+
+        // 검색을 위한 WHERE 문
         searchQuery->setQuery(
                     QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                                       "from client where c_name like '%%1%'").arg(name));
         ui->searchTableView->setModel(searchQuery);
         break;}
-    case 2: {
+
+    case 2: {   // 성별 검색
         QString gender= ui->searchLineEdit->text();
+
+        // 검색을 위한 WHERE LIKE 문
         searchQuery->setQuery(
                     QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                                       "from client where c_gender like '%%1%'").arg(gender));
         ui->searchTableView->setModel(searchQuery);
         break;}
-    case 3: {
+
+    case 3: {   // 나이 검색
         int age = ui->searchLineEdit->text().toInt();
+
         searchQuery->setQuery(
                     QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                                       "from client where c_age like '%%1%'").arg(age));
         ui->searchTableView->setModel(searchQuery);
         break;}
-    case 4: {
+
+    case 4: {   // 전화번호 검색
         QString phone = ui->searchLineEdit->text();
+
         searchQuery->setQuery(
                     QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                             "from client where c_phonenum like '%%1%'").arg(phone));
         ui->searchTableView->setModel(searchQuery);
         break;}
-    case 5: {
+
+    case 5: {   // 주소 검색
         QString address = ui->searchLineEdit->text();
+
         searchQuery->setQuery(
                     QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                                       "from client where c_address like '%%1%'").arg(address));
@@ -232,7 +265,9 @@ void ClientManagerForm::on_searchPushButton_clicked()   // 검색 버튼 사용�
     }
 }
 
-void ClientManagerForm::on_clearPushButton_clicked()    // 클리어 버튼 사용자 정의 슬롯
+
+//___________클리어 버튼 사용자 정의 슬롯____________//
+void ClientManagerForm::on_clearPushButton_clicked()
 {
     // 입력창 내용 클리어
     ui->idLineEdit->clear();
@@ -243,13 +278,33 @@ void ClientManagerForm::on_clearPushButton_clicked()    // 클리어 버튼 사�
     ui->addressLineEdit->clear();
 }
 
+
+/***********************************************************************************************/
+void ClientManagerForm::setHeaderStyle() {
+    q->setHeaderData(0, Qt::Horizontal, tr("ID"));
+    q->setHeaderData(1, Qt::Horizontal, tr("Name"));
+    q->setHeaderData(2, Qt::Horizontal, tr("Gender"));
+    q->setHeaderData(3, Qt::Horizontal, tr("Age"));
+    q->setHeaderData(4, Qt::Horizontal, tr("Phone Number"));
+    q->setHeaderData(5, Qt::Horizontal, tr("Address"));
+
+    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);         // 데이터의 크기에 따라 헤더 사이즈 설정
+    ui->searchTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableView->horizontalHeader()->setStyleSheet("QHeaderView {font-weight: bold; color : sandybrown}");        // 헤더 폰트 설정
+    ui->searchTableView->horizontalHeader()->setStyleSheet("QHeaderView {font-weight: bold; color : sandybrown}");
+}
+
+
+//___________tableView 우클릭 슬롯____________//
 void ClientManagerForm::on_tableView_customContextMenuRequested(const QPoint &pos)
 {
     QPoint globalPos = ui->tableView->mapToGlobal(pos);
-    if(ui->tableView->indexAt(pos).isValid())
+    if(ui->tableView->indexAt(pos).isValid())           // viewer에 데이터가 있을 때만 메뉴 표시
             menu->exec(globalPos);
 }
 
+
+//___________tableView 클릭시 슬롯____________//
 void ClientManagerForm::on_tableView_clicked(const QModelIndex &index)
 {
     int row = index.row();
