@@ -71,7 +71,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QTreeWidget" name="clientTreeWidget">
+        <widget class="QTreeView" name="clientTreeView">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -81,49 +81,25 @@
          <property name="autoScrollMargin">
           <number>18</number>
          </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
          <property name="rootIsDecorated">
           <bool>false</bool>
          </property>
          <property name="itemsExpandable">
           <bool>false</bool>
          </property>
-         <attribute name="headerDefaultSectionSize">
+         <attribute name="headerVisible">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="headerMinimumSectionSize">
           <number>50</number>
          </attribute>
-         <column>
-          <property name="text">
-           <string>client ID</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>name</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>gender</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>age</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>phone Number</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>address</string>
-          </property>
-         </column>
         </widget>
        </item>
        <item>
-        <widget class="QTreeWidget" name="productTreeWidget">
+        <widget class="QTreeView" name="productTreeView">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -151,37 +127,12 @@
          <property name="headerHidden">
           <bool>false</bool>
          </property>
-         <attribute name="headerCascadingSectionResizes">
-          <bool>false</bool>
-         </attribute>
-         <attribute name="headerDefaultSectionSize">
+         <attribute name="headerMinimumSectionSize">
           <number>50</number>
          </attribute>
-         <column>
-          <property name="text">
-           <string>product ID</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>제품명</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>가격</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>재고량</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>품목</string>
-          </property>
-         </column>
+         <attribute name="headerHighlightSections">
+          <bool>false</bool>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -197,7 +148,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>229</width>
+            <width>417</width>
             <height>220</height>
            </rect>
           </property>
@@ -355,7 +306,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>239</width>
+            <width>427</width>
             <height>133</height>
            </rect>
           </property>
@@ -438,8 +389,8 @@
   <tabstop>shopTableView</tabstop>
   <tabstop>showComboBox</tabstop>
   <tabstop>showLineEdit</tabstop>
-  <tabstop>clientTreeWidget</tabstop>
-  <tabstop>productTreeWidget</tabstop>
+  <tabstop>clientTreeView</tabstop>
+  <tabstop>productTreeView</tabstop>
   <tabstop>idLineEdit</tabstop>
   <tabstop>clientNameLineEdit</tabstop>
   <tabstop>pdNameLlineEdit</tabstop>

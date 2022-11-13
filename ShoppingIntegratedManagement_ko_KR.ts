@@ -172,39 +172,39 @@
         <translation type="unfinished">채팅방에서 고객 퇴장시키기.</translation>
     </message>
     <message>
-        <location filename="chatserverform.cpp" line="28"/>
+        <location filename="chatserverform.cpp" line="29"/>
         <source>new connection is established...</source>
         <translation type="unfinished">새로운 연결 기다리는중...</translation>
     </message>
     <message>
-        <location filename="chatserverform.cpp" line="31"/>
+        <location filename="chatserverform.cpp" line="32"/>
         <source>Echo Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="chatserverform.cpp" line="32"/>
-        <location filename="chatserverform.cpp" line="41"/>
+        <location filename="chatserverform.cpp" line="33"/>
+        <location filename="chatserverform.cpp" line="42"/>
         <source>Unable to start the server: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="chatserverform.cpp" line="40"/>
+        <location filename="chatserverform.cpp" line="41"/>
         <source>Chatting Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="chatserverform.cpp" line="48"/>
-        <location filename="chatserverform.cpp" line="67"/>
+        <location filename="chatserverform.cpp" line="49"/>
+        <location filename="chatserverform.cpp" line="70"/>
         <source>The server is running on port %1.</source>
         <translation type="unfinished">채팅 서버 포트번호는 %1입니다.</translation>
     </message>
     <message>
-        <location filename="chatserverform.cpp" line="64"/>
+        <location filename="chatserverform.cpp" line="66"/>
         <source>Log Information</source>
         <translation type="unfinished">알림</translation>
     </message>
     <message>
-        <location filename="chatserverform.cpp" line="65"/>
+        <location filename="chatserverform.cpp" line="67"/>
         <source>Save Complete</source>
         <translation type="unfinished">로그 저장 완료</translation>
     </message>
@@ -217,84 +217,84 @@
         <translation type="unfinished">고객 정보</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="46"/>
-        <location filename="clientmanagerform.ui" line="249"/>
         <location filename="clientmanagerform.ui" line="285"/>
+        <location filename="clientmanagerform.cpp" line="202"/>
+        <location filename="clientmanagerform.cpp" line="267"/>
         <source>ID</source>
         <translation type="unfinished">고객 ID</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="51"/>
-        <location filename="clientmanagerform.ui" line="120"/>
-        <location filename="clientmanagerform.ui" line="254"/>
+        <location filename="clientmanagerform.ui" line="135"/>
         <location filename="clientmanagerform.ui" line="290"/>
+        <location filename="clientmanagerform.cpp" line="203"/>
+        <location filename="clientmanagerform.cpp" line="268"/>
         <source>Name</source>
         <translation type="unfinished">이름</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="56"/>
-        <location filename="clientmanagerform.ui" line="133"/>
-        <location filename="clientmanagerform.ui" line="259"/>
+        <location filename="clientmanagerform.ui" line="148"/>
         <location filename="clientmanagerform.ui" line="295"/>
+        <location filename="clientmanagerform.cpp" line="204"/>
+        <location filename="clientmanagerform.cpp" line="269"/>
         <source>Gender</source>
         <translation type="unfinished">성별</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="61"/>
-        <location filename="clientmanagerform.ui" line="146"/>
-        <location filename="clientmanagerform.ui" line="264"/>
+        <location filename="clientmanagerform.ui" line="161"/>
         <location filename="clientmanagerform.ui" line="300"/>
+        <location filename="clientmanagerform.cpp" line="205"/>
+        <location filename="clientmanagerform.cpp" line="270"/>
         <source>Age</source>
         <translation type="unfinished">나이</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="66"/>
-        <location filename="clientmanagerform.ui" line="175"/>
-        <location filename="clientmanagerform.ui" line="269"/>
+        <location filename="clientmanagerform.ui" line="174"/>
         <location filename="clientmanagerform.ui" line="305"/>
+        <location filename="clientmanagerform.cpp" line="206"/>
+        <location filename="clientmanagerform.cpp" line="271"/>
         <source>Phone Number</source>
         <translation type="unfinished">전화번호</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="71"/>
-        <location filename="clientmanagerform.ui" line="162"/>
-        <location filename="clientmanagerform.ui" line="274"/>
+        <location filename="clientmanagerform.ui" line="187"/>
         <location filename="clientmanagerform.ui" line="310"/>
+        <location filename="clientmanagerform.cpp" line="207"/>
+        <location filename="clientmanagerform.cpp" line="272"/>
         <source>Address</source>
         <translation type="unfinished">주소</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="95"/>
+        <location filename="clientmanagerform.ui" line="110"/>
         <source>&amp;Input</source>
         <translation type="unfinished">고객 정보 입력</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="103"/>
+        <location filename="clientmanagerform.ui" line="118"/>
         <source>I&amp;D</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">고객 ID</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="187"/>
+        <location filename="clientmanagerform.ui" line="202"/>
         <source>&amp;Clear</source>
         <translation type="unfinished">지우기</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="209"/>
+        <location filename="clientmanagerform.ui" line="224"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/i18n/CSApp_ko_KR.qm&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="212"/>
+        <location filename="clientmanagerform.ui" line="227"/>
         <source>&amp;Add</source>
         <translation type="unfinished">추가</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="219"/>
+        <location filename="clientmanagerform.ui" line="234"/>
         <source>&amp;Modify</source>
         <translation type="unfinished">수정</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.ui" line="237"/>
+        <location filename="clientmanagerform.ui" line="252"/>
         <source>&amp;Search</source>
         <translation type="unfinished">고객 정보 검색</translation>
     </message>
@@ -304,7 +304,7 @@
         <translation type="unfinished">검색</translation>
     </message>
     <message>
-        <location filename="clientmanagerform.cpp" line="18"/>
+        <location filename="clientmanagerform.cpp" line="22"/>
         <source>&amp;Remove</source>
         <translation type="unfinished">삭제</translation>
     </message>
@@ -328,7 +328,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="131"/>
-        <location filename="mainwindow.cpp" line="15"/>
+        <location filename="mainwindow.cpp" line="18"/>
         <source>Client Info</source>
         <translation type="unfinished">고객 정보</translation>
     </message>
@@ -340,7 +340,7 @@
     <message>
         <location filename="mainwindow.ui" line="143"/>
         <location filename="mainwindow.ui" line="146"/>
-        <location filename="mainwindow.cpp" line="18"/>
+        <location filename="mainwindow.cpp" line="21"/>
         <source>Product Info</source>
         <translation type="unfinished">제품 정보</translation>
     </message>
@@ -351,7 +351,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="158"/>
-        <location filename="mainwindow.cpp" line="21"/>
+        <location filename="mainwindow.cpp" line="24"/>
         <source>Shopping Info</source>
         <translation type="unfinished">주문 정보</translation>
     </message>
@@ -379,91 +379,95 @@
         <translation type="unfinished">제품 정보</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="31"/>
-        <location filename="productmanagerform.ui" line="82"/>
-        <location filename="productmanagerform.ui" line="206"/>
-        <location filename="productmanagerform.ui" line="237"/>
+        <location filename="productmanagerform.ui" line="75"/>
+        <location filename="productmanagerform.ui" line="214"/>
+        <location filename="productmanagerform.cpp" line="252"/>
+        <location filename="productmanagerform.cpp" line="301"/>
         <source>ID</source>
         <translation type="unfinished">제품 ID</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="36"/>
-        <location filename="productmanagerform.ui" line="211"/>
-        <location filename="productmanagerform.ui" line="242"/>
+        <location filename="productmanagerform.ui" line="219"/>
         <source>제품명</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="41"/>
-        <location filename="productmanagerform.ui" line="216"/>
-        <location filename="productmanagerform.ui" line="247"/>
+        <location filename="productmanagerform.ui" line="224"/>
         <source>가격</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="46"/>
-        <location filename="productmanagerform.ui" line="221"/>
-        <location filename="productmanagerform.ui" line="252"/>
+        <location filename="productmanagerform.ui" line="229"/>
         <source>재고량</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="51"/>
-        <location filename="productmanagerform.ui" line="226"/>
-        <location filename="productmanagerform.ui" line="257"/>
+        <location filename="productmanagerform.ui" line="234"/>
         <source>품목</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="72"/>
+        <location filename="productmanagerform.ui" line="65"/>
         <source>&amp;Input</source>
         <translation type="unfinished">제품 정보 입력</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="96"/>
+        <location filename="productmanagerform.ui" line="89"/>
         <source>productName</source>
-        <translation type="unfinished">제품 이름</translation>
+        <translation type="unfinished">제품명</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="106"/>
+        <location filename="productmanagerform.ui" line="99"/>
+        <location filename="productmanagerform.cpp" line="254"/>
+        <location filename="productmanagerform.cpp" line="303"/>
         <source>Price</source>
         <translation type="unfinished">가격</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="116"/>
+        <location filename="productmanagerform.ui" line="109"/>
+        <location filename="productmanagerform.cpp" line="255"/>
+        <location filename="productmanagerform.cpp" line="304"/>
         <source>Stock</source>
         <translation type="unfinished">재고량</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="126"/>
+        <location filename="productmanagerform.ui" line="119"/>
+        <location filename="productmanagerform.cpp" line="256"/>
+        <location filename="productmanagerform.cpp" line="305"/>
         <source>Category</source>
         <translation type="unfinished">품목</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="138"/>
+        <location filename="productmanagerform.ui" line="131"/>
         <source>&amp;Clear</source>
         <translation type="unfinished">지우기</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="162"/>
+        <location filename="productmanagerform.ui" line="155"/>
         <source>&amp;Add</source>
         <translation type="unfinished">추가</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="169"/>
+        <location filename="productmanagerform.ui" line="162"/>
         <source>&amp;Modify</source>
         <translation type="unfinished">수정</translation>
     </message>
     <message>
-        <location filename="productmanagerform.ui" line="191"/>
-        <location filename="productmanagerform.ui" line="270"/>
+        <location filename="productmanagerform.ui" line="184"/>
+        <location filename="productmanagerform.ui" line="247"/>
         <source>&amp;Search</source>
         <translation type="unfinished">제품 정보 검색</translation>
     </message>
     <message>
-        <location filename="productmanagerform.cpp" line="19"/>
+        <location filename="productmanagerform.cpp" line="21"/>
         <source>&amp;Remove</source>
         <translation type="unfinished">삭제</translation>
+    </message>
+    <message>
+        <location filename="productmanagerform.cpp" line="253"/>
+        <location filename="productmanagerform.cpp" line="302"/>
+        <source>Name</source>
+        <translation type="unfinished">제품명</translation>
     </message>
 </context>
 <context>
@@ -474,201 +478,213 @@
         <translation type="unfinished">주문 정보</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="31"/>
-        <location filename="shoppingmanagerform.ui" line="230"/>
-        <location filename="shoppingmanagerform.ui" line="393"/>
-        <location filename="shoppingmanagerform.ui" line="429"/>
+        <location filename="shoppingmanagerform.ui" line="166"/>
+        <location filename="shoppingmanagerform.ui" line="344"/>
+        <location filename="shoppingmanagerform.cpp" line="34"/>
+        <location filename="shoppingmanagerform.cpp" line="288"/>
         <source>ID</source>
         <translation type="unfinished">주문 ID</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="36"/>
-        <location filename="shoppingmanagerform.ui" line="398"/>
-        <location filename="shoppingmanagerform.ui" line="434"/>
+        <location filename="shoppingmanagerform.ui" line="349"/>
         <source>고객 ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="41"/>
-        <location filename="shoppingmanagerform.ui" line="403"/>
-        <location filename="shoppingmanagerform.ui" line="439"/>
+        <location filename="shoppingmanagerform.ui" line="354"/>
         <source>제품 ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="46"/>
-        <source>주문 일자</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="shoppingmanagerform.ui" line="51"/>
-        <location filename="shoppingmanagerform.ui" line="413"/>
-        <source>주문량</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="shoppingmanagerform.ui" line="56"/>
-        <source>주문 총액</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="shoppingmanagerform.ui" line="68"/>
-        <location filename="shoppingmanagerform.ui" line="115"/>
+        <location filename="shoppingmanagerform.ui" line="53"/>
         <source>name</source>
         <translation type="unfinished">고객 이름</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="73"/>
+        <location filename="shoppingmanagerform.ui" line="58"/>
         <source>pdName</source>
         <translation type="unfinished">제품 이름</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="78"/>
+        <location filename="shoppingmanagerform.ui" line="63"/>
         <source>category</source>
         <translation type="unfinished">품목</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="110"/>
         <source>client ID</source>
-        <translation type="unfinished">고객 ID</translation>
+        <translation type="obsolete">고객 ID</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="120"/>
         <source>gender</source>
-        <translation type="unfinished">성별</translation>
+        <translation type="obsolete">성별</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="125"/>
         <source>age</source>
-        <translation type="unfinished">나이</translation>
+        <translation type="obsolete">나이</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="130"/>
         <source>phone Number</source>
-        <translation type="unfinished">전화번호</translation>
+        <translation type="obsolete">전화번호</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="135"/>
         <source>address</source>
-        <translation type="unfinished">주소</translation>
+        <translation type="obsolete">주소</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="177"/>
         <source>product ID</source>
-        <translation type="unfinished">제품 ID</translation>
+        <translation type="obsolete">제품 ID</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="182"/>
-        <source>제품명</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="shoppingmanagerform.ui" line="187"/>
-        <source>가격</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="shoppingmanagerform.ui" line="192"/>
-        <source>재고량</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="shoppingmanagerform.ui" line="197"/>
-        <source>품목</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="shoppingmanagerform.ui" line="220"/>
+        <location filename="shoppingmanagerform.ui" line="156"/>
         <source>&amp;Input</source>
         <translation type="unfinished">주문 내용 입력</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="244"/>
+        <location filename="shoppingmanagerform.ui" line="180"/>
+        <location filename="shoppingmanagerform.cpp" line="35"/>
+        <location filename="shoppingmanagerform.cpp" line="289"/>
         <source>clientName</source>
         <translation type="unfinished">고객 ID</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="258"/>
+        <location filename="shoppingmanagerform.ui" line="194"/>
+        <location filename="shoppingmanagerform.cpp" line="36"/>
+        <location filename="shoppingmanagerform.cpp" line="290"/>
         <source>productName</source>
         <translation type="unfinished">제품 ID</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="272"/>
+        <location filename="shoppingmanagerform.ui" line="208"/>
+        <location filename="shoppingmanagerform.cpp" line="37"/>
+        <location filename="shoppingmanagerform.cpp" line="291"/>
         <source>time</source>
         <translation type="unfinished">주문 일자</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="279"/>
+        <location filename="shoppingmanagerform.ui" line="215"/>
         <source>Please Input &quot;YYYY-MM-DD&quot;</source>
         <translation type="unfinished">&quot;YYYY-MM-DD&quot;로 입력해주세요</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="286"/>
+        <location filename="shoppingmanagerform.ui" line="222"/>
+        <location filename="shoppingmanagerform.cpp" line="39"/>
+        <location filename="shoppingmanagerform.cpp" line="293"/>
         <source>totalAmount</source>
         <translation type="unfinished">주문 금액</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="300"/>
+        <location filename="shoppingmanagerform.ui" line="236"/>
         <source>99999</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="316"/>
+        <location filename="shoppingmanagerform.ui" line="252"/>
+        <location filename="shoppingmanagerform.cpp" line="38"/>
+        <location filename="shoppingmanagerform.cpp" line="292"/>
         <source>order</source>
         <translation type="unfinished">주문량</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="325"/>
+        <location filename="shoppingmanagerform.ui" line="261"/>
         <source>&amp;Clear</source>
         <translation type="unfinished">지우기</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="349"/>
+        <location filename="shoppingmanagerform.ui" line="285"/>
         <source>&amp;Add</source>
         <translation type="unfinished">추가</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="356"/>
+        <location filename="shoppingmanagerform.ui" line="292"/>
         <source>&amp;Modify</source>
         <translation type="unfinished">수정</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="378"/>
-        <location filename="shoppingmanagerform.ui" line="457"/>
+        <location filename="shoppingmanagerform.ui" line="314"/>
+        <location filename="shoppingmanagerform.ui" line="372"/>
         <source>&amp;Search</source>
         <translation type="unfinished">주문 내용 검색</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="408"/>
-        <location filename="shoppingmanagerform.ui" line="444"/>
+        <location filename="shoppingmanagerform.ui" line="359"/>
         <source>주문일자</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.ui" line="418"/>
-        <source>주문총액</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="shoppingmanagerform.cpp" line="42"/>
+        <location filename="shoppingmanagerform.cpp" line="43"/>
         <source>&amp;Remove</source>
         <translation type="unfinished">제거</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.cpp" line="253"/>
-        <location filename="shoppingmanagerform.cpp" line="263"/>
-        <location filename="shoppingmanagerform.cpp" line="307"/>
-        <location filename="shoppingmanagerform.cpp" line="317"/>
+        <location filename="shoppingmanagerform.cpp" line="198"/>
+        <location filename="shoppingmanagerform.cpp" line="209"/>
+        <location filename="shoppingmanagerform.cpp" line="254"/>
+        <location filename="shoppingmanagerform.cpp" line="265"/>
         <source>ERROR</source>
         <translation type="unfinished">재고 부족</translation>
     </message>
     <message>
-        <location filename="shoppingmanagerform.cpp" line="253"/>
-        <location filename="shoppingmanagerform.cpp" line="263"/>
-        <location filename="shoppingmanagerform.cpp" line="307"/>
-        <location filename="shoppingmanagerform.cpp" line="317"/>
+        <location filename="shoppingmanagerform.cpp" line="198"/>
+        <location filename="shoppingmanagerform.cpp" line="209"/>
+        <location filename="shoppingmanagerform.cpp" line="254"/>
+        <location filename="shoppingmanagerform.cpp" line="265"/>
         <source>Inventory Overflow</source>
         <translation type="unfinished">재고보다 적게 주문해주세요</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="352"/>
+        <source>CID</source>
+        <translation type="unfinished">고객 ID</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="353"/>
+        <source>cName</source>
+        <translation type="unfinished">이름</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="354"/>
+        <source>Gender</source>
+        <translation type="unfinished">성별</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="355"/>
+        <source>Age</source>
+        <translation type="unfinished">나이</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="356"/>
+        <source>Phone Number</source>
+        <translation type="unfinished">전화번호</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="357"/>
+        <source>Address</source>
+        <translation type="unfinished">주소</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="361"/>
+        <source>PID</source>
+        <translation type="unfinished">제품 ID</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="362"/>
+        <source>pName</source>
+        <translation type="unfinished">제품명</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="363"/>
+        <source>Price</source>
+        <translation type="unfinished">가격</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="364"/>
+        <source>Stock</source>
+        <translation type="unfinished">재고량</translation>
+    </message>
+    <message>
+        <location filename="shoppingmanagerform.cpp" line="365"/>
+        <source>Category</source>
+        <translation type="unfinished">품목</translation>
     </message>
 </context>
 </TS>

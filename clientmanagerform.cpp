@@ -41,12 +41,13 @@ ClientManagerForm::ClientManagerForm(QWidget *parent) :
     // TreeView 헤더 스타일 설정
     setHeaderStyle();
 
-    ui->tableView->setModel(q);     // Viewer에 Model 표시
+    ui->tableView->setModel(q);     // Viewer에 Model 연결
 }
 
 ClientManagerForm::~ClientManagerForm()
 {
     delete ui;
+    delete q;
     delete searchQuery;
 }
 
@@ -68,8 +69,8 @@ void ClientManagerForm::removeItem()
 {
     int row = ui->tableView->currentIndex().row();
     int item = q->data(q->index(row, 0)).toInt();       // Query Model에서 삭제하려는 고객의 row를 통해 id를 가져옴
-    /* delect query문 */
-    q->setQuery(QString("delete from client where c_id = '%1'").arg(item));     // id를 argment로 받음
+    /* DELETE QUERY문 */
+    q->setQuery(QString("delete from client where c_id = '%1'").arg(item));     // id를 argument로 받음
     q->setQuery("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                 "from client order by c_id");
 }
@@ -219,7 +220,7 @@ void ClientManagerForm::on_searchPushButton_clicked()
     case 1: {   // 이름 검색
         QString name = ui->searchLineEdit->text();
 
-        // 검색을 위한 WHERE 문
+        // 검색을 위한 WHERE LIKE 문
         searchQuery->setQuery(
                     QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                                       "from client where c_name like '%%1%'").arg(name));
@@ -229,7 +230,6 @@ void ClientManagerForm::on_searchPushButton_clicked()
     case 2: {   // 성별 검색
         QString gender= ui->searchLineEdit->text();
 
-        // 검색을 위한 WHERE LIKE 문
         searchQuery->setQuery(
                     QString("select c_id, C_NAME , C_GENDER , C_AGE , C_PHONENUM, C_ADDRESS "
                                       "from client where c_gender like '%%1%'").arg(gender));

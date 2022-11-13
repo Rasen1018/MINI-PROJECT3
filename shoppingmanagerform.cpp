@@ -3,7 +3,9 @@
 
 #include <QMenu>
 #include <QMessageBox>
+#include <QStandardItem>
 #include <QSqlQueryModel>
+#include <QStandardItemModel>
 
 ShoppingManagerForm::ShoppingManagerForm(QWidget *parent) :
     QWidget(parent),
@@ -16,16 +18,22 @@ ShoppingManagerForm::ShoppingManagerForm(QWidget *parent) :
     ui->splitter->setSizes(sizes);
 
     // header 사이즈 설정
-    ui->clientTreeWidget->header()->
-            setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->productTreeWidget->header()->
-            setSectionResizeMode(QHeaderView::ResizeToContents);
+    setHeaderStyle();
 
-    ui->shopTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    clientModel = new QStandardItemModel(0,6);     // 고객 StandardItemModel 생성, column 사이즈 설정
+    ui->clientTreeView->setModel(clientModel);     // TreeView에 고객 모델 연결
+    setClientHeader();                            // clientTreeView 헤더 스타일 설정
 
+    productModel = new QStandardItemModel(0,5);    // 제품 StandardItemModel 생성, column 사이즈 설정
+    ui->productTreeView->setModel(productModel);   // TreeView에 제품 모델 연결
+    setProductHeader();                           // productTreeView 헤더 스타일 설정
+
+    // Model 설정
     q = new QSqlQueryModel;
-    q->setQuery("select * from orders order by o_id");
-    searchQuery = new QSqlQueryModel;
+    q->setQuery("select * from orders order by o_id");  // ORDERS 정보 SELECT 문
+    searchQuery = new QSqlQueryModel;                   // 검색을 위한 Query Model
+
+    // shopTableView 헤더 설정
     q->setHeaderData(0, Qt::Horizontal, tr("ID"));
     q->setHeaderData(1, Qt::Horizontal, tr("clientName"));
     q->setHeaderData(2, Qt::Horizontal, tr("productName"));
@@ -33,6 +41,7 @@ ShoppingManagerForm::ShoppingManagerForm(QWidget *parent) :
     q->setHeaderData(4, Qt::Horizontal, tr("order"));
     q->setHeaderData(5, Qt::Horizontal, tr("totalAmount"));
 
+    // Viewer에 Model 연결
     ui->shopTableView->setModel(q);
 
     QAction* removeAction = new QAction(tr("&Remove"));
@@ -50,18 +59,20 @@ ShoppingManagerForm::ShoppingManagerForm(QWidget *parent) :
     connect(ui->orderLineEdit, &QLineEdit::textChanged, this, [=](){
         QString order = ui->orderLineEdit->text();
 
-        // 제품 정보를 보여주는 TreeWidget이 없을 경우 주문 목록 TreeWidget에서 가격과 주문 총액을 계산
-        if(ui->productTreeWidget->currentItem()==nullptr) {
-            int row = ui->shopTableView->currentIndex().row();
-            int price =  // 가격 = 주문 수량/주문 총액
-                    (q->data(q->index(row, 5)).toInt())/(q->data(q->index(row, 4)).toInt());
+        // productModel에 제품 정보를 보여주는 데이터가 없을 경우, 주문 목록 TableView에서 가격과 주문 총액을 계산
+        if(ui->productTreeView->currentIndex().constInternalPointer()==nullptr) {
 
+            int row = ui->shopTableView->currentIndex().row();
+            int price =
+                    (q->data(q->index(row, 5)).toInt())/(q->data(q->index(row, 4)).toInt());
+            /*  가격  =          주문금액               ÷             주문 수량            */
             int totalAmount = price * order.toInt();    //주문 총액
             ui->totalLineEdit->setText(QString::number(totalAmount));
         }
-        // 제품 정보를 보여주는 TreeWidget이 있을 경우
+        // productModel에 데이터가 있는 경우
         else {
-            QString price = ui->productTreeWidget->currentItem()->text(2);  // 가격 가져옴
+            int row = ui->productTreeView->currentIndex().row();
+            auto price = (productModel->data(productModel->index(row, 2)));     // 가격 데이터 가져오기
             int amount = price.toInt() * order.toInt();
             ui->totalLineEdit->setText(QString::number(amount));    // 주문 총액 계산
         }
@@ -73,90 +84,109 @@ ShoppingManagerForm::~ShoppingManagerForm()
     delete ui;
     delete q;
     delete searchQuery;
+    delete clientModel;
+    delete productModel;
 }
 
+
+/***********************************************************************************************/
 int ShoppingManagerForm::makeId()       // key 생성
 {
-    if (q->rowCount()==0)
+    if (q->rowCount()==0)      // DB에 데이터가 없을 경우 ID 110001부터 시작
         return 110001;
-    else {
+    else {                                               // 데이터가 있을 경우
         int i = q->rowCount();
-        auto id = q->data(q->index(i-1, 0)).toInt();
+        auto id = q->data(q->index(i-1, 0)).toInt();     // DB 데이터의 마지막 ID를 가져와서 ++id
         return ++id;
     }
 }
 
-void ShoppingManagerForm::removeItem() {    // 아이템 삭제 함수
+
+//__________주문 목록 삭제____________//
+void ShoppingManagerForm::removeItem() {
 
     int row = ui->shopTableView->currentIndex().row();
-    int item = q->data(q->index(row, 0)).toInt();
-    q->setQuery(QString("delete from orders where o_id = '%1'").arg(item));
+    int item = q->data(q->index(row, 0)).toInt();       // Query Model에서 삭제하려는 고객의 row를 통해 id를 가져옴
+   /* DELETE QUERY 문 */
+    q->setQuery(QString("delete from orders where o_id = '%1'").arg(item));     // id를 argument로 받음
     q->setQuery("select * from orders order by o_id");
 }
 
-void ShoppingManagerForm::receiveData(QTreeWidgetItem *c)
-    // ClientManagerForm에서 id, 고객 이름으로 검색된 Item을 가져오는 슬롯
+
+//__________ClientManagerForm에서 StandardItem 가져오는 슬롯____________//
+void ShoppingManagerForm::receiveData(QList<QStandardItem *> c)
 {
-    ui->clientTreeWidget->addTopLevelItem(c);     // 고객 정보 TreeWidget에 추가
+    clientModel->appendRow(c);  // 모델에 item 추가
 }
 
-void ShoppingManagerForm::shopReceiveData(QTreeWidgetItem *p)
-    // ProductManagerForm에서 id, 제품 이름, 품목으로 검색된 Item을 가져오는 슬롯
+
+//__________ProductManagerForm에서 StandardItem 가져오는 슬롯____________//
+void ShoppingManagerForm::shopReceiveData(QList<QStandardItem *> p)
 {
-    ui->productTreeWidget->addTopLevelItem(p);     // 제품 정보 TreeWidget에 추가
+    productModel->appendRow(p); // 모델에 item 추가
 }
 
-// ShoppingManagerForm에서 고객 리스트, 제품 리스트를 검색해서 띄워주기
-void ShoppingManagerForm::on_showLineEdit_returnPressed()
+
+
+/***********************************************************************************************/
+void ShoppingManagerForm::on_showLineEdit_returnPressed()       // 고객, 제품 정보 검색
 {
     if(ui->showLineEdit->text() == nullptr) return;
 
     int i = ui->showComboBox->currentIndex();
 
     if(i==0) {      // 고객 이름으로 검색할 경우
-        ui->clientTreeWidget->clear();
+        clientModel->removeRows(0, clientModel->rowCount());
         QString name = ui->showLineEdit->text();
         emit clientDataSent(name);      // 고객 이름 전달해주는 시그널 발생
     }
 
     if(i==1) {      // 제품 이름으로 검색할 경우
-        ui->productTreeWidget->clear();
-    QString name = ui->showLineEdit->text();
+        productModel->removeRows(0, productModel->rowCount());
+        QString name = ui->showLineEdit->text();
         emit dataSent(name);            // 제품 이름 전달해주는 시그널 발생
     }
 
     if(i==2) {      // 제품 품목으로 검색할 경우
-        ui->productTreeWidget->clear();
+        productModel->removeRows(0, productModel->rowCount());
         QString name = ui->showLineEdit->text();
         emit categoryDataSent(name);    // 제품 품목 전달해주는 시그널 발생
     }
 }
 
-void ShoppingManagerForm::on_clientTreeWidget_itemClicked   // 고객 정보 TreeWidget 클릭시
-(QTreeWidgetItem *item, int column)
+
+//__________고객 정보 TreeView 클릭 슬롯____________//
+void ShoppingManagerForm::on_clientTreeView_clicked(const QModelIndex &index)
 {
-    Q_UNUSED(column);
-    ui->clientNameLineEdit->setText(item->text(0));     // 고객 이름 입력
+    int row = index.row();
+    ui->clientNameLineEdit->        // 고객 ID 입력
+            setText(clientModel->data(clientModel->index(row, 0)).toString());
 }
 
 
-void ShoppingManagerForm::on_productTreeWidget_itemClicked   // 제품 정보 TreeWidget 클릭시
-(QTreeWidgetItem *item, int column)
+//__________제품 정보 TreeView 클릭 슬롯____________//
+void ShoppingManagerForm::on_productTreeView_clicked(const QModelIndex &index)
 {
-    Q_UNUSED(column);
-    ui->pdNameLlineEdit->setText(item->text(0));    // 제품 이름 입력
+    int row = index.row();
     QString order = ui->orderLineEdit->text();
-    // 주문량이 없다면 주문 총액에 제품 가격 입력
-    if(order=="") {
-    ui->totalLineEdit->setText(item->text(2));
+
+    ui->pdNameLlineEdit->       // 제품 ID 입력
+            setText(productModel->data(productModel->index(row, 0)).toString());
+
+    if(order=="") {             // 주문량이 없는 경우 총액 입력
+    ui->totalLineEdit->
+            setText(productModel->data(productModel->index(row, 2)).toString());
     }
-    // 주문량이 있다면 총액 입력
-    else {
-        int amount = order.toInt()*(item->text(2).toInt());     // 총액 계산
+    else {                      // 주문량이 있는 경우 총액 입력
+        int amount = order.toInt()*(productModel->data(productModel->index(row, 2)).toInt());
+        // 총액 계산
         ui->totalLineEdit->setText(QString::number(amount));
     }
 }
 
+
+
+/***********************************************************************************************/
 void ShoppingManagerForm::on_addPushButton_clicked()    // 추가 버튼 클릭시
 {
     QString time;
@@ -169,8 +199,8 @@ void ShoppingManagerForm::on_addPushButton_clicked()    // 추가 버튼 클릭�
     totalPrice = ui->totalLineEdit->text().toInt();
 
     // 기존의 주문 목록을 이용하여 주문하는 경우(트리 위젯 X)
-    if (ui->productTreeWidget->currentItem() == nullptr) {
-        int stock = ui->productTreeWidget->topLevelItem(0)->text(3).toInt();
+    if (ui->productTreeView->currentIndex().constInternalPointer() == nullptr) {
+        int stock = productModel->data(productModel->index(0, 3)).toInt();
         qDebug() << stock;
         order = ui->orderLineEdit->text().toInt();
 
@@ -188,7 +218,8 @@ void ShoppingManagerForm::on_addPushButton_clicked()    // 추가 버튼 클릭�
     }
 
     else {      // 제품 정보 보여주는 트리 위젯이 있을 경우
-        int stock = ui->productTreeWidget->currentItem()->text(3).toInt();
+        int row = ui->productTreeView->currentIndex().row();
+        int stock = productModel->data(productModel->index(row, 3)).toInt();
         order = ui->orderLineEdit->text().toInt();
 
         if (stock < order) {        // 재고가 부족할 경우
@@ -206,7 +237,8 @@ void ShoppingManagerForm::on_addPushButton_clicked()    // 추가 버튼 클릭�
     }
 }
 
-void ShoppingManagerForm::on_modifyPushButton_clicked()     // 수정버튼 클릭시
+//____________________수정 버튼 사용자 슬롯______________________//
+void ShoppingManagerForm::on_modifyPushButton_clicked()
 {
     int id = ui->idLineEdit->text().toInt();
     int row = ui->shopTableView->currentIndex().row();
@@ -220,8 +252,8 @@ void ShoppingManagerForm::on_modifyPushButton_clicked()     // 수정버튼 클�
     prevOrder = q->data(q->index(row, 4)).toInt();      // 기존의 주문량 저장
 
     // 기존의 주문 목록을 이용하여 주문하는 경우(트리 위젯 X)
-    if (ui->productTreeWidget->currentItem() == nullptr) {
-        int stock = ui->productTreeWidget->topLevelItem(0)->text(3).toInt();
+    if (ui->productTreeView->currentIndex().constInternalPointer() == nullptr) {
+        int stock = productModel->data(productModel->index(0, 3)).toInt();
         qDebug() << stock;
         order = ui->orderLineEdit->text().toInt();
 
@@ -241,7 +273,8 @@ void ShoppingManagerForm::on_modifyPushButton_clicked()     // 수정버튼 클�
     }
 
     else {      // 제품 정보 보여주는 트리 위젯이 있을 경우
-        int stock = ui->productTreeWidget->currentItem()->text(3).toInt();
+        int row = ui->productTreeView->currentIndex().row();
+        int stock = productModel->data(productModel->index(row, 3)).toInt();
         order = ui->orderLineEdit->text().toInt();
 
         if (stock < (order-prevOrder)) {     // 재고가 부족하다면
@@ -260,7 +293,9 @@ void ShoppingManagerForm::on_modifyPushButton_clicked()     // 수정버튼 클�
     }
 }
 
-void ShoppingManagerForm::on_searchPushButton_clicked()     // 검색 버튼 클릭시
+
+//____________________검색 버튼 사용자 슬롯______________________//
+void ShoppingManagerForm::on_searchPushButton_clicked()
 {
     if(ui->searchLineEdit->text()==nullptr) return;
 
@@ -277,35 +312,37 @@ void ShoppingManagerForm::on_searchPushButton_clicked()     // 검색 버튼 클
     case 0: {
         int id = ui->searchLineEdit->text().toInt();
         searchQuery->setQuery(
-                    QString("select * from orders where o_id = '%1'").arg(id));
+                    QString("select * from orders where o_id = '%1' order by o_id").arg(id));
         ui->searchTableView->setModel(searchQuery);
         break;
     }
     case 1: {
         int CID = ui->searchLineEdit->text().toInt();
         searchQuery->setQuery(
-                    QString("select * from orders where o_c_id = '%1'").arg(CID));
+                    QString("select * from orders where o_c_id = '%1' order by o_id").arg(CID));
         ui->searchTableView->setModel(searchQuery);
         break;
     }
     case 2: {
         int PID = ui->searchLineEdit->text().toInt();
         searchQuery->setQuery(
-                    QString("select * from orders where o_p_id = '%1'").arg(PID));
+                    QString("select * from orders where o_p_id = '%1' order by o_id").arg(PID));
         ui->searchTableView->setModel(searchQuery);
         break;
     }
     case 3: {
         QString date = ui->searchLineEdit->text();
         searchQuery->setQuery(
-                    QString("select * from orders where o_date like '%%1%'").arg(date));
+                    QString("select * from orders where o_date like '%%1%' order by o_id").arg(date));
         ui->searchTableView->setModel(searchQuery);
         break;
     }
     }
 }
 
-void ShoppingManagerForm::on_clearPushButton_clicked()      // 클리어 버튼 클릭시
+
+//____________________클리어 버튼 클릭시 슬롯______________________//
+void ShoppingManagerForm::on_clearPushButton_clicked()
 {
     ui->idLineEdit->clear();
     ui->clientNameLineEdit->clear();
@@ -315,12 +352,53 @@ void ShoppingManagerForm::on_clearPushButton_clicked()      // 클리어 버튼 
     ui->totalLineEdit->clear();
 }
 
+
+
+/***********************************************************************************************/
+void ShoppingManagerForm::setHeaderStyle() {
+    ui->clientTreeView->header()->
+            setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->productTreeView->header()->
+            setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->shopTableView->horizontalHeader()->
+            setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->searchTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->clientTreeView->header()->setStyleSheet("QHeaderView {font-weight: bold}");
+    ui->productTreeView->header()->setStyleSheet("QHeaderView {font-weight: bold}");
+    ui->shopTableView->horizontalHeader()->setStyleSheet("QHeaderView {font-weight: bold; color : sandybrown}");
+    ui->searchTableView->horizontalHeader()->setStyleSheet("QHeaderView {font-weight: bold; color : sandybrown}");
+}
+
+
+void ShoppingManagerForm::setClientHeader() {
+    clientModel->setHeaderData(0, Qt::Horizontal, tr("CID"));
+    clientModel->setHeaderData(1, Qt::Horizontal, tr("cName"));
+    clientModel->setHeaderData(2, Qt::Horizontal, tr("Gender"));
+    clientModel->setHeaderData(3, Qt::Horizontal, tr("Age"));
+    clientModel->setHeaderData(4, Qt::Horizontal, tr("Phone Number"));
+    clientModel->setHeaderData(5, Qt::Horizontal, tr("Address"));
+}
+
+
+
+void ShoppingManagerForm::setProductHeader() {
+    productModel->setHeaderData(0, Qt::Horizontal, tr("PID"));
+    productModel->setHeaderData(1, Qt::Horizontal, tr("pName"));
+    productModel->setHeaderData(2, Qt::Horizontal, tr("Price"));
+    productModel->setHeaderData(3, Qt::Horizontal, tr("Stock"));
+    productModel->setHeaderData(4, Qt::Horizontal, tr("Category"));
+}
+
+
+
 void ShoppingManagerForm::on_shopTableView_customContextMenuRequested(const QPoint &pos)
 {
     QPoint globalPos = ui->shopTableView->mapToGlobal(pos);
     if(ui->shopTableView->indexAt(pos).isValid())
             menu->exec(globalPos);
 }
+
+
 
 void ShoppingManagerForm::on_shopTableView_clicked(const QModelIndex &index)
 {
@@ -332,8 +410,19 @@ void ShoppingManagerForm::on_shopTableView_clicked(const QModelIndex &index)
     ui->orderLineEdit->setText(q->data(q->index(row, 4)).toString());
     ui->totalLineEdit->setText(q->data(q->index(row, 5)).toString());
 
-    ui->clientTreeWidget->clear();
-    ui->productTreeWidget->clear();
+    clientModel->removeRows(0, clientModel->rowCount());
+    productModel->removeRows(0, productModel->rowCount());
     emit clientIdSent(q->data(q->index(row, 1)).toInt());   // 고객 ID 전달
     emit productIdSent(q->data(q->index(row, 2)).toInt());  // 제품 ID 전달
 }
+
+
+void ShoppingManagerForm::on_searchTableView_clicked(const QModelIndex &index)
+{
+    int row = index.row();
+    clientModel->removeRows(0, clientModel->rowCount());
+    productModel->removeRows(0, productModel->rowCount());
+    emit clientIdSent(q->data(q->index(row, 1)).toInt());   // 고객 ID 전달
+    emit productIdSent(q->data(q->index(row, 2)).toInt());  // 제품 ID 전달
+}
+
