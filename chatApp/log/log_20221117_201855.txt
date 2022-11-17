@@ -1,0 +1,8 @@
+Thu Nov 17 20:19:37 2022, <font color=red>나</font> : 안녕하세요
+Thu Nov 17 20:19:43 2022, <font color=lightsteelblue>1004(이수정)</font> : 어서오세요
+Thu Nov 17 20:19:51 2022, <font color=lightsteelblue>1007(주영남)</font> : 반갑습니다~
+Thu Nov 17 20:20:06 2022, <font color=lightsteelblue>1005(안다미)</font> : 안녕하세요!!
+Thu Nov 17 20:20:20 2022, <font color=red>나</font> : 다들 요즘 경기 괜찮으신가요?
+Thu Nov 17 20:20:34 2022, <font color=red>나</font> : 환율 때문에 걱정이 많으시죠...
+Thu Nov 17 20:20:45 2022, <font color=lightsteelblue>1004(이수정)</font> : 그러게요 ㅜ 그래도 힘내야죠!
+Thu Nov 17 20:21:07 2022, <font color=lightsteelblue>1007(주영남)</font> : 맞습니다 또 언제 그랬냐는듯 좋을 때가 올겁니다 ㅎㅎ

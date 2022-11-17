@@ -35,6 +35,9 @@ public:
     ~ChatClientForm();
 
 private slots:
+    void logLoad();
+    void logName();
+    void getRecentLog();
     // 데이터 송수신을 위한 슬롯
     void sendProtocol(Chat_Status type, char* data, int size);
     // 버튼 눌렀을 때
@@ -56,6 +59,7 @@ private:
     qint64 totalSize;                   // 파일 전체 사이즈
     QByteArray outBlock;                // 파일 전송을 위한 bytearray
     LogThread* logThread;
+    QString recentLog;
     bool isSent;
 
 };

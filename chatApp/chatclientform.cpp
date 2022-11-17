@@ -18,7 +18,7 @@ ChatClientForm::ChatClientForm(QWidget *parent) :
     ui->setupUi(this);
     setGeometry(60, 60, 420, 320);              //위젯 크기 설정
     ChatClientForm::setWindowFlags(Qt::WindowTitleHint);
-    ui->ipLineEdit->setText("192.168.0.33");    //ip 고정
+    ui->ipLineEdit->setText("192.168.0.63");    //ip 고정
     QRegularExpression re("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
                           "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
                           "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
@@ -26,6 +26,7 @@ ChatClientForm::ChatClientForm(QWidget *parent) :
     QRegularExpressionValidator validator(re);
     ui->ipLineEdit->setValidator(&validator);
 
+    connect(this, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     connect(ui->inputLineEdit, SIGNAL(returnPressed()), ui->enterPushButton, SLOT(click()));
     // enter 누르면 버튼 클릭
     ui->inputLineEdit->setEnabled(false);   //위젯 설정
@@ -137,6 +138,51 @@ ChatClientForm::~ChatClientForm()
     logThread->terminate();
 }
 
+void ChatClientForm::logLoad() {
+    qDebug() << recentLog;
+    QFile file("../chatApp/log/" + recentLog);      // 이전 로그 txt 파일 불러오기
+
+      if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+          return;
+
+      QTextStream in(&file);
+      while (!in.atEnd()) {
+          QString line = in.readLine();
+          QList<QString> row = line.split(", ");  // ',' 기준으로 채팅만 불러오기
+          if (row.size()) {
+              ui->chatTextEdit->append(row[1]);
+          }
+      }
+      file.close( );  // 파일 닫기
+}
+
+void ChatClientForm::logName() {
+    QFile file("loglist.txt");              // 파일 저장
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    out << recentLog << "\n";
+    file.close( );
+}
+
+void ChatClientForm::getRecentLog() {
+    QFile file("loglist.txt");      // 이전 로그 txt 파일 불러오기
+
+      if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+          return;
+
+      QTextStream in(&file);
+      while (!in.atEnd()) {
+          QString line = in.readLine();
+          QList<QString> row = line.split("\n");  // enter 기준으로 최근 로그 파일 이름 불러오기
+          if (row.size()) {
+              recentLog = row[0];
+          }
+      }
+      file.close( );  // 파일 닫기
+}
+
 void ChatClientForm::sendProtocol(Chat_Status type, char* data, int size)
 {
     QByteArray dataArray;               // 데이터를 읽기 위한 bytearray 생성
@@ -153,6 +199,7 @@ void ChatClientForm::on_logInPushButton_clicked()       // 로그인 버튼 클�
 {
     if(ui->idLineEdit->text()=="") return;
     if(ui->logInPushButton->text() == tr("Log In")) {   // 로그인 버튼의 텍스트가 Log In 이라면
+        getRecentLog();
         clientSocket->connectToHost(ui->ipLineEdit->text( ),        // 서버 연결(ip, port 전송)
                                     ui->portLineEdit->text( ).toInt( ));
         clientSocket->waitForConnected();
@@ -164,13 +211,13 @@ void ChatClientForm::on_logInPushButton_clicked()       // 로그인 버튼 클�
     }
     else if(ui->logInPushButton->text() == tr("Chat in"))  {    // 로그인 버튼의 텍스트가 Chat in 이라면
         //chat status : chat in, 클라이언트 id 전송
+        if (ui->chatTextEdit->toPlainText() == nullptr) logLoad();
         sendProtocol(Chat_In, ui->idLineEdit->text().toStdString().data(), 1010);
         ui->logInPushButton->setText(tr("Chat Out"));   // 로그인 버튼 Chat Out 텍스트 변경
         ui->inputLineEdit->setEnabled(true);
         ui->enterPushButton->setEnabled(true);
         ui->sendPushButton->setEnabled(true);
         // 현재 시간의 파일이름을 저장해서 불러오기 할 때 사용
-        QString recentLog = logThread->getFileName();
     }
     else if(ui->logInPushButton->text() == tr("Chat Out"))  {   // 로그인 버튼의 텍스트가 Chat Out 이라면
         //chat status : chat out, 클라이언트 id 전송
@@ -203,9 +250,12 @@ void ChatClientForm::on_enterPushButton_clicked()       // 메세지 전송 버�
 void ChatClientForm::on_pushButton_clicked()            // 로그아웃 버튼 클릭
 {
     sendProtocol(Chat_LogOut, ui->idLineEdit->text().toStdString().data(), 1010);
+    ui->chatTextEdit->clear();
     clientSocket->close();
     ui->logInPushButton->setEnabled(true);
     logThread->saveData();
+    recentLog = logThread->getFileName();
+    logName();
 }
 
 void ChatClientForm::on_sendPushButton_clicked()        // 파일 전송 버튼 클릭
@@ -255,9 +305,11 @@ void ChatClientForm::on_sendPushButton_clicked()        // 파일 전송 버튼 
 
 void ChatClientForm::on_quitPushButton_clicked()
 {
+    logThread->saveData();
+    recentLog = logThread->getFileName();
+    logName();
     sendProtocol(Chat_LogOut, ui->idLineEdit->text().toStdString().data(), 1010);
     clientSocket->close();
     ui->logInPushButton->setEnabled(true);
-    logThread->saveData();
-}
 
+}
