@@ -66,6 +66,7 @@ ChatClientForm::ChatClientForm(QWidget *parent) :
 
         switch(type) {   // chat status에 따라 위젯 설정
         case Chat_Talk:  // 채팅 중일 때
+            if (ui->chatTextEdit->toPlainText() == nullptr) logLoad();
             ui->chatTextEdit->append(QString(data));    // 메세지 창에 데이터(채팅 내용) 추가
             ui->inputLineEdit->setEnabled(true);
             ui->enterPushButton->setEnabled(true);
@@ -129,13 +130,16 @@ ChatClientForm::ChatClientForm(QWidget *parent) :
     progressDialog->setAutoClose(true);
     progressDialog->reset();
 
+
 }
 
 ChatClientForm::~ChatClientForm()
 {
-    delete ui;
     clientSocket->close();
+    fileClient->close();
     logThread->terminate();
+    delete ui;
+
 }
 
 void ChatClientForm::logLoad() {
@@ -305,11 +309,9 @@ void ChatClientForm::on_sendPushButton_clicked()        // 파일 전송 버튼 
 
 void ChatClientForm::on_quitPushButton_clicked()
 {
+    sendProtocol(Chat_LogOut, ui->idLineEdit->text().toStdString().data(), 1010);
     logThread->saveData();
     recentLog = logThread->getFileName();
     logName();
-    sendProtocol(Chat_LogOut, ui->idLineEdit->text().toStdString().data(), 1010);
-    clientSocket->close();
-    ui->logInPushButton->setEnabled(true);
 
 }
